@@ -1,4 +1,4 @@
-
+﻿
 
 import sys
 import os
@@ -109,7 +109,7 @@ def extract_rvs(args_dict):
 
         for i, line in enumerate(data):
             if i % 100 == 0:
-                print("Extracting rupture variations from file %d of %d." % (i+1, num_files))
+                print("Extracting rupture variations from file %d of %d." % (i + 1, num_files))
 
             url, rvs = line.strip().split()
             _, _, _, site_name, run_id, basename = url.split("/")
@@ -120,6 +120,7 @@ def extract_rvs(args_dict):
 
             sizeof_float = 4
             num_components = 2
+            found_rvs = []
 
             with open(local_rupture_filename, 'rb') as fp_rup_in:
                 while rv_list:
@@ -129,6 +130,8 @@ def extract_rvs(args_dict):
 
                     rv = struct.unpack('i', header_str[32:36])[0]
                     nt = struct.unpack('i', header_str[40:44])[0]
+
+                    print(f"Found RV: {rv} in file {basename}")  # <-- Log every RV found
 
                     if rv in rv_list:
                         rv_data = fp_rup_in.read(num_components * sizeof_float * nt)
@@ -146,15 +149,19 @@ def extract_rvs(args_dict):
                             fp_out.write(header_str)
                             fp_out.write(rv_data)
 
+                        found_rvs.append(rv)
                         rv_list.remove(rv)
                     else:
+                        # Skip over data block if RV is not in list
                         fp_rup_in.seek(num_components * sizeof_float * nt, 1)
 
                 if rv_list:
-                    print("Couldn't find rupture variation(s) %s in file %s, aborting." % (str(rv_list), local_rupture_filename), file=sys.stderr)
-                    sys.exit(utilities.ExitCodes.FILE_PARSING_ERROR)
+                    print("⚠️ WARNING: Couldn't find rupture variation(s) %s in file %s — skipping those."
+                          % (str(rv_list), local_rupture_filename), file=sys.stderr)
 
     print("Finished extracting rupture variations to %s." % output_directory)
+
+
 
 def delete_temp_files(temp_directory, local_filenames):
     print("Removing temporary files from %s." % temp_directory)

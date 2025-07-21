@@ -118,17 +118,24 @@ def run_all():
             continue
         query_filters.append(f)
 
-    # --- Commenting out seismogram-specific event list reading ---
-    # if dp_obj.get_name() == "Seismograms" and event_file.get():
-    #     event_list = []
-    #     with open(event_file.get(), 'r') as fp:
-    #         for line in fp:
-    #             parts = line.strip().split(',')
-    #             event_list.append((int(parts[0]), int(parts[1]), int(parts[2])))
-    # else:
-    #     event_list = None
+    
+    event_list = None
+    if dp_obj.get_name() == "Seismograms" and event_file.get():
+        event_list = []
+        with open(event_file.get(), 'r') as fp:
+            for line in fp:
+                parts = line.strip().split(',')
+                if len(parts) != 3:
+                    continue  # skip malformed lines
+                try:
+                    src_id = int(parts[0])
+                    rup_id = int(parts[1])
+                    rv_id = int(parts[2])
+                    event_list.append((src_id, rup_id, rv_id))
+                except ValueError:
+                    continue
 
-    # --- Use None for event_list regardless of product ---
+
     event_list = None
 
     query = query_constructor.construct_queries(model_obj, dp_obj, query_filters, event_list)
@@ -158,18 +165,18 @@ def run_all():
     result_set = db_wrap.execute_queries(config_dict, input_dict)
     db_wrap.write_results(result_set, args_dict, input_dict, config_dict)
 
-    # --- Commenting out Seismogram-specific download and extraction ---
-    # if dp_obj.get_name() == "Seismograms":
-    #     db_wrap.write_url_file(args_dict, input_dict, config_dict, result_set)
-    #     url_file = args_dict["output_filename"].replace(".data", ".urls")
-    #     if os.path.exists(url_file):
-    #         collector_args = {
-    #             "input_filename": url_file,
-    #             "output_directory": output_dir.get(),
-    #             "temp_directory": os.path.join(os.getcwd(), "temp")
-    #         }
-    #         data_collector.retrieve_files(collector_args)
-    #         data_collector.extract_rvs(collector_args)
+   
+    if dp_obj.get_name() == "Seismograms":
+         db_wrap.write_url_file(args_dict, input_dict, config_dict, result_set)
+         url_file = args_dict["output_filename"].replace(".data", ".urls")
+         if os.path.exists(url_file):
+             collector_args = {
+                "input_filename": url_file,
+                 "output_directory": output_dir.get(),
+                 "temp_directory": os.path.join(os.getcwd(), "temp")
+             }
+             data_collector.retrieve_files(collector_args)
+             data_collector.extract_rvs(collector_args)
 
     messagebox.showinfo("Success", "CyberShake data retrieval complete.")
 
