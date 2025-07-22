@@ -9,6 +9,46 @@ import query_constructor
 import run_database_wrapper as db_wrap
 import run_data_collector as data_collector
 import utilities
+import config
+import google.generativeai as genai
+
+# --- Gemini API Setup ---
+genai.configure(api_key=config.GEMINI_API_KEY)
+
+chat_history = ["User: What are the models in the cybershake tool?",
+    "AI: Study 22.12 Broadband and Study 22.12 Low Frequency."
+    "User: What are the products in the cybershake tool?",
+    "AI: Site Info, Seismograms, Intensity Measures, and Event Info."
+    ]
+
+def ask_llm(prompt):
+    
+    lower_prompt = prompt.lower().strip()
+
+    # Handle custom response
+    if "what are the models" in lower_prompt:
+        response = "Study 22.12 Broadband and Study 22.12 Low Frequency."
+        chat_history.append(f"User: {prompt}")
+        chat_history.append(f"AI: {response}")
+        return response
+
+    try:
+        model = genai.GenerativeModel("gemini-2.5-flash")
+        
+        # Format conversation history into a single prompt
+        full_prompt = "\n".join(chat_history + [f"User: {prompt}"])
+        
+        response = model.generate_content(full_prompt)
+        answer = response.text.strip()
+
+        # Append new exchange to history
+        chat_history.append(f"User: {prompt}")
+        chat_history.append(f"AI: {answer}")
+
+        return answer
+
+    except Exception as e:
+        return f"Error contacting Gemini LLM: {e}"
 
 
 # --- Globals ---
@@ -77,6 +117,9 @@ def build_filter_inputs():
     model_name = selected_model.get()
     model_obj = next((m for m in model_list if m.get_name() == model_name), None)
     dp_obj = next((d for d in dp_list if d.get_name() == dp_name), None)
+    if not dp_obj:
+        return
+
     relevant_types = dp_obj.get_relevant_filters()
 
     row = 7
@@ -118,7 +161,6 @@ def run_all():
             continue
         query_filters.append(f)
 
-    
     event_list = None
     if dp_obj.get_name() == "Seismograms" and event_file.get():
         event_list = []
@@ -126,7 +168,7 @@ def run_all():
             for line in fp:
                 parts = line.strip().split(',')
                 if len(parts) != 3:
-                    continue  # skip malformed lines
+                    continue
                 try:
                     src_id = int(parts[0])
                     rup_id = int(parts[1])
@@ -135,11 +177,7 @@ def run_all():
                 except ValueError:
                     continue
 
-
-    event_list = None
-
     query = query_constructor.construct_queries(model_obj, dp_obj, query_filters, event_list)
-
     input_dict = {
         "select": query.get_select_string(),
         "from": query.get_from_string(),
@@ -165,24 +203,47 @@ def run_all():
     result_set = db_wrap.execute_queries(config_dict, input_dict)
     db_wrap.write_results(result_set, args_dict, input_dict, config_dict)
 
-   
     if dp_obj.get_name() == "Seismograms":
-         db_wrap.write_url_file(args_dict, input_dict, config_dict, result_set)
-         url_file = args_dict["output_filename"].replace(".data", ".urls")
-         if os.path.exists(url_file):
-             collector_args = {
+        db_wrap.write_url_file(args_dict, input_dict, config_dict, result_set)
+        url_file = args_dict["output_filename"].replace(".data", ".urls")
+        if os.path.exists(url_file):
+            collector_args = {
                 "input_filename": url_file,
-                 "output_directory": output_dir.get(),
-                 "temp_directory": os.path.join(os.getcwd(), "temp")
-             }
-             data_collector.retrieve_files(collector_args)
-             data_collector.extract_rvs(collector_args)
+                "output_directory": output_dir.get(),
+                "temp_directory": os.path.join(os.getcwd(), "temp")
+            }
+            data_collector.retrieve_files(collector_args)
+            data_collector.extract_rvs(collector_args)
 
     messagebox.showinfo("Success", "CyberShake data retrieval complete.")
 
+# --- LLM Query Popup ---
+def open_llm_popup():
+    popup = tk.Toplevel()
+    popup.title("Ask CyberShake AI")
 
-# --- Bindings and Controls ---
+    tk.Label(popup, text="Ask a question about filters, models, or configuration:").pack()
+    text_box = tk.Text(popup, height=5, width=60)
+    text_box.pack()
+
+    tk.Label(popup, text="LLM Response:").pack()
+    response_box = tk.Text(popup, height=10, width=60, wrap="word")
+    response_box.pack()
+
+    def submit():
+        question = text_box.get("1.0", tk.END).strip()
+        if not question:
+            return
+        response = ask_llm(question)
+        response_box.delete("1.0", tk.END)  # clear previous response
+        response_box.insert(tk.END, response)
+
+    tk.Button(popup, text="Submit", command=submit).pack(pady=5)
+
+
+# --- Buttons ---
 tk.Button(frame, text="Configure Filters", command=build_filter_inputs).grid(row=6, column=2)
 tk.Button(frame, text="Run Pipeline", command=run_all, bg="green", fg="white").grid(row=100, column=1, pady=10)
+tk.Button(frame, text="Ask AI", command=open_llm_popup, bg="blue", fg="white").grid(row=100, column=2, pady=10)
 
 root.mainloop()
