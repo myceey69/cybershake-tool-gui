@@ -24,7 +24,6 @@ chat_history = [
     "AI: Site Info, Seismograms, Intensity Measures, and Event Info.",
     "User: How to use the Cybershake Tool?",
     "AI: The CyberShake Tool GUI is designed to simplify the process of accessing and analyzing earthquake simulation data. To begin, users select a seismic model from the dropdown menu, which determines the scope of available data. Next, they choose a data product—options include Site Info, Seismogram, Event Info, or Intensity Measures—each providing access to different types of information. Once a data product is selected, the GUI dynamically displays the relevant filters, allowing users to narrow down their query based on parameters such as site location, magnitude, period, or event ID, depending on the product chosen. After applying the filters, users can retrieve the data with a single click. For seismogram data specifically, the GUI includes a \"View Seismogram\" button, which opens a waveform viewer to visualize ground motion time series, enabling immediate analysis of the retrieved results."
-
 ]
 
 def ask_llm(prompt):
