@@ -13,6 +13,7 @@ import config
 import google.generativeai as genai
 import matplotlib.pyplot as plt
 import numpy as np
+from PIL import Image, ImageTk
 
 # --- Gemini API Setup ---
 genai.configure(api_key=config.GEMINI_API_KEY)
@@ -21,9 +22,7 @@ chat_history = [
     "User: What are the models in the cybershake tool?",
     "AI: Study 22.12 Broadband and Study 22.12 Low Frequency.",
     "User: What are the products in the cybershake tool?",
-    "AI: Site Info, Seismograms, Intensity Measures, and Event Info.",
-    "User: How to use the Cybershake Tool?",
-    "AI: The CyberShake Tool GUI is designed to simplify the process of accessing and analyzing earthquake simulation data. To begin, users select a seismic model from the dropdown menu, which determines the scope of available data. Next, they choose a data product—options include Site Info, Seismogram, Event Info, or Intensity Measures—each providing access to different types of information. Once a data product is selected, the GUI dynamically displays the relevant filters, allowing users to narrow down their query based on parameters such as site location, magnitude, period, or event ID, depending on the product chosen. After applying the filters, users can retrieve the data with a single click. For seismogram data specifically, the GUI includes a \"View Seismogram\" button, which opens a waveform viewer to visualize ground motion time series, enabling immediate analysis of the retrieved results."
+    "AI: Site Info, Seismograms, Intensity Measures, and Event Info."
 ]
 
 def ask_llm(prompt):
@@ -54,6 +53,8 @@ filter_list = filters.create_filters()
 root = tk.Tk()
 root.title("CyberShake Data Access Tool")
 
+
+
 frame = ttk.Frame(root, padding=15)
 frame.grid(row=0, column=0, sticky="nsew")
 
@@ -71,6 +72,15 @@ selected_filters = []
 # Group 1: Input Configuration
 input_frame = ttk.LabelFrame(frame, text="Input Configuration", padding=10)
 input_frame.grid(row=0, column=0, columnspan=3, sticky="ew", pady=5)
+
+logo_path = "scec.png"  # Update this path if needed
+logo_image = Image.open(logo_path)
+logo_image = logo_image.resize((70, 70), Image.Resampling.LANCZOS)
+logo_photo = ImageTk.PhotoImage(logo_image)
+
+logo_label = tk.Label(root, image=logo_photo)
+logo_label.image = logo_photo  # keep reference
+logo_label.grid(row=0, column=1, sticky="ne", padx=10, pady=5)
 
 tk.Label(input_frame, text="Request Label:").grid(row=0, column=0, sticky="e", padx=5, pady=2)
 tk.Entry(input_frame, textvariable=request_label, width=30).grid(row=0, column=1, columnspan=2, sticky="w", padx=5, pady=2)
@@ -270,5 +280,6 @@ def read_and_plot_grm():
         plt.show()
     except Exception as e:
         messagebox.showerror("Read Error", f"Failed to read file:\n{e}")
+
 
 root.mainloop()
