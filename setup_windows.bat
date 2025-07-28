@@ -31,10 +31,10 @@ echo To start working, activate your environment:
 echo     venv\Scripts\activate
 echo.
 echo Then run your CyberShake tool with:
-echo     -Opening run_windows (for windows)
+echo     -Opening run_cybershake_windows (for windows)
 
 echo     -Opening terminal go to the cybershake tool directory with 
-echo     command (cd) and then type "python run_retrieve.py" (for macOS)
+echo     command (cd) and then type "python cs_gui.py" (for macOS)
 echo ---------------------------------------------
 
 pause
