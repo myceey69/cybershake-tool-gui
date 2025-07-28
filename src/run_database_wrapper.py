@@ -292,8 +292,9 @@ def write_results(result_set, args_dict, input_dict, config_dict):
     #If we're doing seismograms, need to create URL file
     if input_dict['data_product']=="Seismograms":
         write_url_file(args_dict, input_dict, config_dict, result_set)
+    print("\n=======================================================================================================")
     print("\nDatabase results are available in %s." % filename)
-    print("\n===========================================================================================")
+    print("\n=======================================================================================================")
  
         
 
