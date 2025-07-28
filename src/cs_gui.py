@@ -75,12 +75,14 @@ input_frame.grid(row=0, column=0, columnspan=3, sticky="ew", pady=5)
 
 logo_path = "scec.png"  # Update this path if needed
 logo_image = Image.open(logo_path)
-logo_image = logo_image.resize((70, 70), Image.Resampling.LANCZOS)
+logo_image = logo_image.resize((60, 60), Image.Resampling.LANCZOS)
 logo_photo = ImageTk.PhotoImage(logo_image)
 
-logo_label = tk.Label(root, image=logo_photo)
-logo_label.image = logo_photo  # keep reference
-logo_label.grid(row=0, column=1, sticky="ne", padx=10, pady=5)
+# Display inside the input frame
+logo_label = tk.Label(input_frame, image=logo_photo)
+logo_label.image = logo_photo  # prevent garbage collection
+logo_label.grid(row=0, column=3, rowspan=3, padx=(50, 0), sticky="e")
+
 
 tk.Label(input_frame, text="Request Label:").grid(row=0, column=0, sticky="e", padx=5, pady=2)
 tk.Entry(input_frame, textvariable=request_label, width=30).grid(row=0, column=1, columnspan=2, sticky="w", padx=5, pady=2)
