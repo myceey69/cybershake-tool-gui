@@ -11,7 +11,8 @@ GUI powered by Tkinter.
 
 **GUI:**
 <br><br>
-<img width="498" height="386" alt="image" src="https://github.com/user-attachments/assets/9c6abab4-6081-4092-a902-ff1b34e5a550" />
+<img width="508" height="423" alt="image" src="https://github.com/user-attachments/assets/4443b030-298e-4803-b039-15d82f443e4a" />
+
 
 
 
