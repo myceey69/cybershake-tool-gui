@@ -6,6 +6,7 @@ GUI powered by Tkinter.
 **Implementations:**
   - LLM
   - Seismogram Reader
+  - Interactive Map
 <br> 
 
 
