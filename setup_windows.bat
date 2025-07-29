@@ -19,6 +19,7 @@ IF %ERRORLEVEL% NEQ 0 (
 :: --- Install required Python packages ---
 pip install numpy pandas sqlalchemy mysql-connector-python configparser pymysql matplotlib
 pip install google-generativeai
+pip install pywebview
 
 :: --- Upgrade pip ---
 echo Upgrading pip...

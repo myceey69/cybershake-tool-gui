@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>CyberShake Interactive Map</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <style>
+    #map { height: 100vh; width: 100vw; margin: 0; }
+    html, body { margin: 0; padding: 0; height: 100%; }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script>
+    // Initialize the map centered between the points
+    const map = L.map('map').setView([34.08, -118.22], 11);
+
+    // Add OpenStreetMap baselayer
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    // Add pins for each CyberShake site
+    const sites = [
+      {
+        name: "USC",
+        longName: "University of Southern California",
+        lat: 34.0192,
+        lon: -118.286
+      },
+      {
+        name: "PAS",
+        longName: "Pasadena",
+        lat: 34.148426,
+        lon: -118.17119
+      }
+    ];
+
+    sites.forEach(site => {
+      L.marker([site.lat, site.lon])
+        .addTo(map)
+        .bindPopup(`<b>${site.name}</b><br>${site.longName}`);
+    });
+
+    // Optional click interaction
+    map.on('click', function(e) {
+      const { lat, lng } = e.latlng;
+      L.popup()
+        .setLatLng([lat, lng])
+        .setContent(`Clicked at:<br>${lat.toFixed(5)}, ${lng.toFixed(5)}`)
+        .openOn(map);
+    });
+  </script>
+</body>
+</html>

@@ -14,6 +14,7 @@ import google.generativeai as genai
 import matplotlib.pyplot as plt
 import numpy as np
 from PIL import Image, ImageTk
+import webview
 
 # --- Gemini API Setup ---
 genai.configure(api_key=config.GEMINI_API_KEY)
@@ -121,6 +122,15 @@ filter_frame.grid(row=4, column=0, columnspan=3, sticky="ew", pady=(10, 0))
 tk.Button(action_frame, text="Read Seismogram", command=lambda: read_and_plot_grm(), bg="purple", fg="white", width=18).grid(row=0, column=0, padx=10)
 tk.Button(action_frame, text="Run Tool", command=lambda: run_all(), bg="green", fg="white", width=18).grid(row=0, column=1, padx=10)
 tk.Button(action_frame, text="Ask AI", command=lambda: open_llm_popup(), bg="blue", fg="white", width=18).grid(row=0, column=2, padx=10)
+
+def open_map_window():
+    map_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "leaflet_map.html")
+    webview.create_window("CyberShake Interactive Map", map_path, width=800, height=600)
+    webview.start()
+
+
+
+tk.Button(action_frame, text="Open Map", command=open_map_window, bg="orange", fg="black", width=18).grid(row=0, column=3, padx=10)
 
 # --- Dynamic Filters ---
 def build_filter_inputs():
