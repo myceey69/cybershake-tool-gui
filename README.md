@@ -23,6 +23,7 @@ GUI powered by Tkinter.
 <img width="554" height="415" alt="image" src="https://github.com/user-attachments/assets/3844c399-1809-4e17-9735-b236af2d671a" />
 <br><br>
 **Seismogram Reader:**
+<br><br>
 <img width="640" height="305" alt="image" src="https://github.com/user-attachments/assets/813cf18b-53cd-4fb5-8032-b11dcc080972" />
 
 
