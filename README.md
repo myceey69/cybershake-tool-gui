@@ -16,14 +16,15 @@ GUI powered by Tkinter.
 <br><br>
 **LLM:**
 <br><br>
-<img width="992" height="418" alt="image" src="https://github.com/user-attachments/assets/0bd5db74-4215-4ad1-ac2f-7dce805b7b79" />
+<img width="438" height="319" alt="image" src="https://github.com/user-attachments/assets/46b1e776-428b-43f1-a28a-9b122fd076ea" />
 <br><br>
 **Interactive Map:**
 <br><br>
-<img width="1298" height="593" alt="image" src="https://github.com/user-attachments/assets/b7a71cb2-3050-4af2-92eb-b7e89e0b2419" />
+<img width="554" height="415" alt="image" src="https://github.com/user-attachments/assets/3844c399-1809-4e17-9735-b236af2d671a" />
 <br><br>
 **Seismogram Reader:**
-<img width="1708" height="574" alt="image" src="https://github.com/user-attachments/assets/1bee73e0-c3d3-4282-8576-99c38a555232" />
+<img width="640" height="305" alt="image" src="https://github.com/user-attachments/assets/813cf18b-53cd-4fb5-8032-b11dcc080972" />
+
 
 
 
