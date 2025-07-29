@@ -129,8 +129,7 @@ def open_map_window():
     webview.start()
 
 
-
-tk.Button(action_frame, text="Open Map", command=open_map_window, bg="orange", fg="black", width=18).grid(row=0, column=3, padx=10)
+tk.Button(action_frame, text="Open Map", command=open_map_window, bg="orange", fg="black", width=18).grid(row=2, column=1, padx=15, pady=(10, 0))
 
 # --- Dynamic Filters ---
 def build_filter_inputs():
