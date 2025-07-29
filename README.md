@@ -21,6 +21,10 @@ GUI powered by Tkinter.
 **Interactive Map:**
 <br><br>
 <img width="1298" height="593" alt="image" src="https://github.com/user-attachments/assets/b7a71cb2-3050-4af2-92eb-b7e89e0b2419" />
+<br><br>
+**Seismogram Reader:**
+<img width="1708" height="574" alt="image" src="https://github.com/user-attachments/assets/1bee73e0-c3d3-4282-8576-99c38a555232" />
+
 
 
 
