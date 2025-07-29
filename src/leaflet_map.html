@@ -11,42 +11,3448 @@
   </style>
 </head>
 <body>
+
+<style>
+  #controls {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    padding: 10px;
+    z-index: 1000;
+    box-shadow: 0 0 5px rgba(0,0,0,0.3);
+    font-family: sans-serif;
+    font-size: 14px;
+  }
+  #controls input, #controls select {
+    margin-bottom: 5px;
+    width: 10%;
+  }
+</style>
+<div id="controls">
+  <input type="text" id="searchBox" placeholder="Search by Site Name" />
+  <label for="vs30Filter">Thompson Vs30 &gt;=</label>
+  <input type="number" id="vs30Filter" placeholder="e.g. 400" />
+  <label for="z1Filter">Z1.0 &lt;=</label>
+  <input type="number" id="z1Filter" placeholder="e.g. 500" />
+  <button onclick="applyFilters()">Apply Filters</button>
+  <button onclick="resetFilters()">Reset</button>
+</div>
+
   <div id="map"></div>
 
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   <script>
-    // Initialize the map centered between the points
     const map = L.map('map').setView([34.08, -118.22], 11);
 
-    // Add OpenStreetMap baselayer
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '&copy; OpenStreetMap contributors'
     }).addTo(map);
 
-    // Add pins for each CyberShake site
     const sites = [
-      {
-        name: "USC",
-        longName: "University of Southern California",
-        lat: 34.0192,
-        lon: -118.286
-      },
-      {
-        name: "PAS",
-        longName: "Pasadena",
-        lat: 34.148426,
-        lon: -118.17119
-      }
-    ];
+  {
+    name: "USC",
+    longName: "University of Southern California",
+    lat: 34.0192,
+    lon: -118.286,
+    thompson_vs30: 336.39,
+    cvm_vs30: 295.7,
+    z1_0: 580.0,
+    z2_5: 4100.0
+  },
+  {
+    name: "PAS",
+    longName: "Pasadena",
+    lat: 34.148426,
+    lon: -118.17119,
+    thompson_vs30: 907.58,
+    cvm_vs30: 687.7,
+    z1_0: 40.0,
+    z2_5: 700.0
+  },
+  {
+    name: "LADT",
+    longName: "Los Angeles Downtown",
+    lat: 34.05204,
+    lon: -118.25713,
+    thompson_vs30: 348.97,
+    cvm_vs30: 334.2,
+    z1_0: 310.0,
+    z2_5: 2070.0
+  },
+  {
+    name: "LBP",
+    longName: "Long Beach Port",
+    lat: 33.754944,
+    lon: -118.223,
+    thompson_vs30: 226.2,
+    cvm_vs30: 209.5,
+    z1_0: 770.0,
+    z2_5: 2840.0
+  },
+  {
+    name: "WNGC",
+    longName: "Whittier Narrows Golf Course",
+    lat: 34.041824,
+    lon: -118.0653,
+    thompson_vs30: 292.48,
+    cvm_vs30: 264.5,
+    z1_0: 500.0,
+    z2_5: 3490.0
+  },
+  {
+    name: "SABD",
+    longName: "Santa Ana Business District",
+    lat: 33.754112,
+    lon: -117.86778,
+    thompson_vs30: 226.08,
+    cvm_vs30: 216.3,
+    z1_0: 390.0,
+    z2_5: 4440.0
+  },
+  {
+    name: "SBSM",
+    longName: "San Bernardino Strong Motion",
+    lat: 34.064986,
+    lon: -117.29201,
+    thompson_vs30: 274.45,
+    cvm_vs30: 255.9,
+    z1_0: 400.0,
+    z2_5: 1820.0
+  },
+  {
+    name: "FFI",
+    longName: "Five-Fourteen Interchange",
+    lat: 34.33603,
+    lon: -118.50862,
+    thompson_vs30: 349.68,
+    cvm_vs30: 308.7,
+    z1_0: 280.0,
+    z2_5: 3910.0
+  },
+  {
+    name: "CCP",
+    longName: "Century City Plaza",
+    lat: 34.054886,
+    lon: -118.41302,
+    thompson_vs30: 322.5,
+    cvm_vs30: 289.4,
+    z1_0: 420.0,
+    z2_5: 2960.0
+  },
+  {
+    name: "SMCA",
+    longName: "Santa Monica Civic Auditorium",
+    lat: 34.00909,
+    lon: -118.48939,
+    thompson_vs30: 372.04,
+    cvm_vs30: 319.2,
+    z1_0: 590.0,
+    z2_5: 2450.0
+  },
+  {
+    name: "PTWN",
+    longName: "Pioneer Town",
+    lat: 34.1428,
+    lon: -116.49771,
+    thompson_vs30: 710.11,
+    cvm_vs30: 634.5,
+    z1_0: 70.0,
+    z2_5: 1190.0
+  },
+  {
+    name: "PERR",
+    longName: "Perris",
+    lat: 33.80594,
+    lon: -117.24904,
+    thompson_vs30: 710.07,
+    cvm_vs30: 675.0,
+    z1_0: 40.0,
+    z2_5: 280.0
+  },
+  {
+    name: "GAVI",
+    longName: "Gavilan",
+    lat: 33.79844,
+    lon: -117.39802,
+    thompson_vs30: 709.93,
+    cvm_vs30: 655.2,
+    z1_0: 50.0,
+    z2_5: 410.0
+  },
+  {
+    name: "MBRD",
+    longName: "Mockingbird",
+    lat: 33.962,
+    lon: -117.37745,
+    thompson_vs30: 351.9,
+    cvm_vs30: 366.8,
+    z1_0: 150.0,
+    z2_5: 410.0
+  },
+  {
+    name: "PEDL",
+    longName: "Pedley",
+    lat: 33.99014,
+    lon: -117.46292,
+    thompson_vs30: 709.38,
+    cvm_vs30: 368.1,
+    z1_0: 150.0,
+    z2_5: 360.0
+  },
+  {
+    name: "LBUT",
+    longName: "Lovejoy Buttes",
+    lat: 34.59946,
+    lon: -117.83157,
+    thompson_vs30: 719.73,
+    cvm_vs30: 646.5,
+    z1_0: 60.0,
+    z2_5: 630.0
+  },
+  {
+    name: "ALIS",
+    longName: "Aliso",
+    lat: 34.41973,
+    lon: -118.09137,
+    thompson_vs30: 720.72,
+    cvm_vs30: 649.7,
+    z1_0: 60.0,
+    z2_5: 700.0
+  },
+  {
+    name: "PACI",
+    longName: "Pacifico",
+    lat: 34.34609,
+    lon: -117.97474,
+    thompson_vs30: 740.99,
+    cvm_vs30: 667.0,
+    z1_0: 50.0,
+    z2_5: 640.0
+  },
+  {
+    name: "SLVW",
+    longName: "Silverwood Lake",
+    lat: 34.29296,
+    lon: -117.34775,
+    thompson_vs30: 699.52,
+    cvm_vs30: 624.6,
+    z1_0: 70.0,
+    z2_5: 1360.0
+  },
+  {
+    name: "ALP",
+    longName: "Antelope",
+    lat: 34.68708,
+    lon: -118.29946,
+    thompson_vs30: 351.9,
+    cvm_vs30: 325.5,
+    z1_0: 140.0,
+    z2_5: 880.0
+  },
+  {
+    name: "OSI",
+    longName: "Osito Audit: Castaic Lake Dam",
+    lat: 34.6145,
+    lon: -118.7235,
+    thompson_vs30: 351.9,
+    cvm_vs30: 358.6,
+    z1_0: 310.0,
+    z2_5: 380.0
+  },
+  {
+    name: "PDE",
+    longName: "Pardee",
+    lat: 34.44199,
+    lon: -118.58215,
+    thompson_vs30: 351.82,
+    cvm_vs30: 333.9,
+    z1_0: 310.0,
+    z2_5: 1840.0
+  },
+  {
+    name: "MOP",
+    longName: "Moorpark",
+    lat: 34.28085,
+    lon: -118.9049,
+    thompson_vs30: 293.5,
+    cvm_vs30: 297.5,
+    z1_0: 320.0,
+    z2_5: 6140.0
+  },
+  {
+    name: "LGU",
+    longName: "Laguna Peak",
+    lat: 34.10819,
+    lon: -119.06587,
+    thompson_vs30: 384.53,
+    cvm_vs30: 393.1,
+    z1_0: 310.0,
+    z2_5: 2410.0
+  },
+  {
+    name: "WSS",
+    longName: "West Side Station",
+    lat: 34.1717,
+    lon: -118.64971,
+    thompson_vs30: 407.95,
+    cvm_vs30: 358.6,
+    z1_0: 200.0,
+    z2_5: 2430.0
+  },
+  {
+    name: "HLL",
+    longName: "North Hollywood",
+    lat: 34.17643,
+    lon: -118.35967,
+    thompson_vs30: 311.49,
+    cvm_vs30: 278.8,
+    z1_0: 610.0,
+    z2_5: 1190.0
+  },
+  {
+    name: "LGB",
+    longName: "Laguna Bell",
+    lat: 33.9753,
+    lon: -118.14918,
+    thompson_vs30: 344.07,
+    cvm_vs30: 270.0,
+    z1_0: 710.0,
+    z2_5: 4520.0
+  },
+  {
+    name: "COO",
+    longName: "Compton",
+    lat: 33.89604,
+    lon: -118.21639,
+    thompson_vs30: 240.25,
+    cvm_vs30: 220.8,
+    z1_0: 720.0,
+    z2_5: 4280.0
+  },
+  {
+    name: "LAF",
+    longName: "La Fresa",
+    lat: 33.86889,
+    lon: -118.33143,
+    thompson_vs30: 331.9,
+    cvm_vs30: 295.3,
+    z1_0: 710.0,
+    z2_5: 3420.0
+  },
+  {
+    name: "RPV",
+    longName: "Rancho Palos Verdes",
+    lat: 33.74346,
+    lon: -118.40412,
+    thompson_vs30: 320.4,
+    cvm_vs30: 364.3,
+    z1_0: 150.0,
+    z2_5: 1540.0
+  },
+  {
+    name: "DLA",
+    longName: "Del Amo",
+    lat: 33.84822,
+    lon: -118.09624,
+    thompson_vs30: 229.28,
+    cvm_vs30: 210.6,
+    z1_0: 820.0,
+    z2_5: 4850.0
+  },
+  {
+    name: "BRE",
+    longName: "Barre Substation",
+    lat: 33.80776,
+    lon: -117.98116,
+    thompson_vs30: 229.86,
+    cvm_vs30: 215.0,
+    z1_0: 690.0,
+    z2_5: 4640.0
+  },
+  {
+    name: "STG",
+    longName: "Santiago",
+    lat: 33.664,
+    lon: -117.76856,
+    thompson_vs30: 293.49,
+    cvm_vs30: 292.2,
+    z1_0: 180.0,
+    z2_5: 1720.0
+  },
+  {
+    name: "PLS",
+    longName: "Pleasants Peak",
+    lat: 33.7953,
+    lon: -117.60906,
+    thompson_vs30: 706.0,
+    cvm_vs30: 631.8,
+    z1_0: 70.0,
+    z2_5: 1180.0
+  },
+  {
+    name: "OLI",
+    longName: "Olinda",
+    lat: 33.94539,
+    lon: -117.92372,
+    thompson_vs30: 342.58,
+    cvm_vs30: 315.6,
+    z1_0: 410.0,
+    z2_5: 2560.0
+  },
+  {
+    name: "RIO",
+    longName: "Rio Hondo",
+    lat: 34.10473,
+    lon: -117.97956,
+    thompson_vs30: 323.4,
+    cvm_vs30: 293.0,
+    z1_0: 350.0,
+    z2_5: 2820.0
+  },
+  {
+    name: "CHN",
+    longName: "Chino",
+    lat: 33.99879,
+    lon: -117.68044,
+    thompson_vs30: 293.5,
+    cvm_vs30: 263.9,
+    z1_0: 310.0,
+    z2_5: 800.0
+  },
+  {
+    name: "TAB",
+    longName: "Table Mountain",
+    lat: 34.38245,
+    lon: -117.68191,
+    thompson_vs30: 724.98,
+    cvm_vs30: 652.8,
+    z1_0: 60.0,
+    z2_5: 720.0
+  },
+  {
+    name: "PDU",
+    longName: "Padua",
+    lat: 34.1207,
+    lon: -117.63808,
+    thompson_vs30: 351.9,
+    cvm_vs30: 344.0,
+    z1_0: 310.0,
+    z2_5: 1040.0
+  },
+  {
+    name: "SVD",
+    longName: "Seven Oaks Dam",
+    lat: 34.10647,
+    lon: -117.09822,
+    thompson_vs30: 439.31,
+    cvm_vs30: 546.4,
+    z1_0: 80.0,
+    z2_5: 1490.0
+  },
+  {
+    name: "FIL",
+    longName: "Filmore Central Park",
+    lat: 34.39865,
+    lon: -118.912,
+    thompson_vs30: 351.9,
+    cvm_vs30: 281.4,
+    z1_0: 990.0,
+    z2_5: 6820.0
+  },
+  {
+    name: "LAPD",
+    longName: "Lake Palmdale",
+    lat: 34.557,
+    lon: -118.125,
+    thompson_vs30: 364.83,
+    cvm_vs30: 399.2,
+    z1_0: 110.0,
+    z2_5: 570.0
+  },
+  {
+    name: "STNI",
+    longName: "Seven Ten-Ninety Interchange ",
+    lat: 33.93088,
+    lon: -118.17881,
+    thompson_vs30: 236.18,
+    cvm_vs30: 215.2,
+    z1_0: 880.0,
+    z2_5: 5570.0
+  },
+  {
+    name: "BVH",
+    longName: "Beverly Hospital",
+    lat: 34.015,
+    lon: -118.1005,
+    thompson_vs30: 390.45,
+    cvm_vs30: 340.4,
+    z1_0: 510.0,
+    z2_5: 4600.0
+  },
+  {
+    name: "EMCH",
+    longName: "El Monte City Hall",
+    lat: 34.0709,
+    lon: -118.0297,
+    thompson_vs30: 227.76,
+    cvm_vs30: 245.6,
+    z1_0: 380.0,
+    z2_5: 3570.0
+  },
+  {
+    name: "SGRTT",
+    longName: "San Gabriel River - Two Ten Interchange",
+    lat: 34.1321,
+    lon: -117.9495,
+    thompson_vs30: 301.26,
+    cvm_vs30: 290.2,
+    z1_0: 220.0,
+    z2_5: 1850.0
+  },
+  {
+    name: "CSDH",
+    longName: "CSU Dominguez Hills",
+    lat: 33.863,
+    lon: -118.257,
+    thompson_vs30: 367.78,
+    cvm_vs30: 323.5,
+    z1_0: 530.0,
+    z2_5: 3950.0
+  },
+  {
+    name: "HUMC",
+    longName: "Harvard-UCLA Medical Center",
+    lat: 33.8306,
+    lon: -118.2918,
+    thompson_vs30: 292.42,
+    cvm_vs30: 264.4,
+    z1_0: 750.0,
+    z2_5: 3340.0
+  },
+  {
+    name: "SGCD",
+    longName: "San Gabriel Canyon Dam",
+    lat: 34.2058,
+    lon: -117.8625,
+    thompson_vs30: 716.23,
+    cvm_vs30: 535.7,
+    z1_0: 80.0,
+    z2_5: 690.0
+  },
+  {
+    name: "TRA",
+    longName: "Torrance Airport",
+    lat: 33.804,
+    lon: -118.3393,
+    thompson_vs30: 304.98,
+    cvm_vs30: 271.2,
+    z1_0: 850.0,
+    z2_5: 2200.0
+  },
+  {
+    name: "RHCH",
+    longName: "Rolling Hills Estates City Hall",
+    lat: 33.7834,
+    lon: -118.3528,
+    thompson_vs30: 343.53,
+    cvm_vs30: 330.9,
+    z1_0: 340.0,
+    z2_5: 1860.0
+  },
+  {
+    name: "MRSD",
+    longName: "Morris Dam",
+    lat: 34.1749,
+    lon: -117.8811,
+    thompson_vs30: 352.21,
+    cvm_vs30: 383.0,
+    z1_0: 120.0,
+    z2_5: 1110.0
+  },
+  {
+    name: "P14",
+    longName: "p14",
+    lat: 34.061253,
+    lon: -118.27574,
+    thompson_vs30: 331.87,
+    cvm_vs30: 308.2,
+    z1_0: 310.0,
+    z2_5: 2010.0
+  },
+  {
+    name: "P25",
+    longName: "p25",
+    lat: 34.07598,
+    lon: -118.49891,
+    thompson_vs30: 353.0,
+    cvm_vs30: 487.3,
+    z1_0: 150.0,
+    z2_5: 450.0
+  },
+  {
+    name: "P24",
+    longName: "p24",
+    lat: 34.123295,
+    lon: -118.53032,
+    thompson_vs30: 627.36,
+    cvm_vs30: 486.1,
+    z1_0: 150.0,
+    z2_5: 470.0
+  },
+  {
+    name: "P23",
+    longName: "p23",
+    lat: 34.15379,
+    lon: -118.54903,
+    thompson_vs30: 328.97,
+    cvm_vs30: 321.7,
+    z1_0: 170.0,
+    z2_5: 920.0
+  },
+  {
+    name: "P22",
+    longName: "p22",
+    lat: 34.18277,
+    lon: -118.56609,
+    thompson_vs30: 288.84,
+    cvm_vs30: 288.9,
+    z1_0: 220.0,
+    z2_5: 2270.0
+  },
+  {
+    name: "P21",
+    longName: "p21",
+    lat: 34.209946,
+    lon: -118.58717,
+    thompson_vs30: 286.48,
+    cvm_vs30: 269.1,
+    z1_0: 300.0,
+    z2_5: 2370.0
+  },
+  {
+    name: "P20",
+    longName: "p20",
+    lat: 34.23448,
+    lon: -118.60878,
+    thompson_vs30: 407.51,
+    cvm_vs30: 344.6,
+    z1_0: 340.0,
+    z2_5: 2710.0
+  },
+  {
+    name: "P1",
+    longName: "p1",
+    lat: 34.3146,
+    lon: -118.48887,
+    thompson_vs30: 300.27,
+    cvm_vs30: 306.6,
+    z1_0: 350.0,
+    z2_5: 4420.0
+  },
+  {
+    name: "P2",
+    longName: "p2",
+    lat: 34.285625,
+    lon: -118.46393,
+    thompson_vs30: 495.29,
+    cvm_vs30: 455.1,
+    z1_0: 200.0,
+    z2_5: 3480.0
+  },
+  {
+    name: "P3",
+    longName: "p3",
+    lat: 34.24939,
+    lon: -118.42409,
+    thompson_vs30: 338.39,
+    cvm_vs30: 299.2,
+    z1_0: 390.0,
+    z2_5: 2330.0
+  },
+  {
+    name: "P4",
+    longName: "p4",
+    lat: 34.216213,
+    lon: -118.37437,
+    thompson_vs30: 301.11,
+    cvm_vs30: 272.2,
+    z1_0: 500.0,
+    z2_5: 1200.0
+  },
+  {
+    name: "P5",
+    longName: "p5",
+    lat: 34.191063,
+    lon: -118.33417,
+    thompson_vs30: 297.24,
+    cvm_vs30: 267.4,
+    z1_0: 650.0,
+    z2_5: 980.0
+  },
+  {
+    name: "P6",
+    longName: "p6",
+    lat: 34.16921,
+    lon: -118.30314,
+    thompson_vs30: 303.12,
+    cvm_vs30: 288.9,
+    z1_0: 320.0,
+    z2_5: 890.0
+  },
+  {
+    name: "P7",
+    longName: "p7",
+    lat: 34.13857,
+    lon: -118.27466,
+    thompson_vs30: 352.46,
+    cvm_vs30: 316.0,
+    z1_0: 220.0,
+    z2_5: 530.0
+  },
+  {
+    name: "P8",
+    longName: "p8",
+    lat: 34.1073,
+    lon: -118.251945,
+    thompson_vs30: 352.09,
+    cvm_vs30: 326.3,
+    z1_0: 240.0,
+    z2_5: 1240.0
+  },
+  {
+    name: "P9",
+    longName: "p9",
+    lat: 34.08211,
+    lon: -118.22514,
+    thompson_vs30: 352.58,
+    cvm_vs30: 327.2,
+    z1_0: 310.0,
+    z2_5: 2070.0
+  },
+  {
+    name: "P10",
+    longName: "p10",
+    lat: 34.056297,
+    lon: -118.20656,
+    thompson_vs30: 365.01,
+    cvm_vs30: 333.9,
+    z1_0: 310.0,
+    z2_5: 2220.0
+  },
+  {
+    name: "P11",
+    longName: "p11",
+    lat: 34.033783,
+    lon: -118.197174,
+    thompson_vs30: 374.95,
+    cvm_vs30: 338.2,
+    z1_0: 380.0,
+    z2_5: 2390.0
+  },
+  {
+    name: "P12",
+    longName: "p12",
+    lat: 34.01185,
+    lon: -118.17989,
+    thompson_vs30: 298.92,
+    cvm_vs30: 267.3,
+    z1_0: 540.0,
+    z2_5: 2930.0
+  },
+  {
+    name: "P13",
+    longName: "p13",
+    lat: 33.99317,
+    lon: -118.164375,
+    thompson_vs30: 258.8,
+    cvm_vs30: 240.2,
+    z1_0: 620.0,
+    z2_5: 3810.0
+  },
+  {
+    name: "P15",
+    longName: "p15",
+    lat: 34.024624,
+    lon: -118.48174,
+    thompson_vs30: 387.56,
+    cvm_vs30: 322.8,
+    z1_0: 640.0,
+    z2_5: 4750.0
+  },
+  {
+    name: "P16",
+    longName: "p16",
+    lat: 34.03183,
+    lon: -118.4468,
+    thompson_vs30: 298.23,
+    cvm_vs30: 264.1,
+    z1_0: 690.0,
+    z2_5: 4870.0
+  },
+  {
+    name: "P17",
+    longName: "p17",
+    lat: 34.03552,
+    lon: -118.409584,
+    thompson_vs30: 384.69,
+    cvm_vs30: 326.2,
+    z1_0: 630.0,
+    z2_5: 4250.0
+  },
+  {
+    name: "P18",
+    longName: "p18",
+    lat: 34.051228,
+    lon: -118.35438,
+    thompson_vs30: 371.92,
+    cvm_vs30: 329.8,
+    z1_0: 430.0,
+    z2_5: 2530.0
+  },
+  {
+    name: "P19",
+    longName: "p19",
+    lat: 34.04732,
+    lon: -118.321785,
+    thompson_vs30: 355.49,
+    cvm_vs30: 321.4,
+    z1_0: 340.0,
+    z2_5: 2310.0
+  },
+  {
+    name: "s066",
+    longName: "s066",
+    lat: 34.20175,
+    lon: -119.08568,
+    thompson_vs30: 228.02,
+    cvm_vs30: 215.7,
+    z1_0: 470.0,
+    z2_5: 2900.0
+  },
+  {
+    name: "s070",
+    longName: "s070",
+    lat: 34.3598,
+    lon: -118.98116,
+    thompson_vs30: 293.5,
+    cvm_vs30: 260.2,
+    z1_0: 1120.0,
+    z2_5: 6260.0
+  },
+  {
+    name: "s074",
+    longName: "s074",
+    lat: 34.51776,
+    lon: -118.87627,
+    thompson_vs30: 469.45,
+    cvm_vs30: 458.3,
+    z1_0: 90.0,
+    z2_5: 480.0
+  },
+  {
+    name: "s078",
+    longName: "s078",
+    lat: 34.67565,
+    lon: -118.77098,
+    thompson_vs30: 386.56,
+    cvm_vs30: 399.2,
+    z1_0: 90.0,
+    z2_5: 410.0
+  },
+  {
+    name: "s082",
+    longName: "s082",
+    lat: 34.83345,
+    lon: -118.66531,
+    thompson_vs30: 386.75,
+    cvm_vs30: 371.4,
+    z1_0: 140.0,
+    z2_5: 1650.0
+  },
+  {
+    name: "s151",
+    longName: "s151",
+    lat: 34.11491,
+    lon: -118.8956,
+    thompson_vs30: 351.9,
+    cvm_vs30: 390.5,
+    z1_0: 150.0,
+    z2_5: 480.0
+  },
+  {
+    name: "s155",
+    longName: "s155",
+    lat: 34.27281,
+    lon: -118.79083,
+    thompson_vs30: 293.5,
+    cvm_vs30: 279.2,
+    z1_0: 310.0,
+    z2_5: 1710.0
+  },
+  {
+    name: "s159",
+    longName: "s159",
+    lat: 34.43062,
+    lon: -118.68566,
+    thompson_vs30: 350.34,
+    cvm_vs30: 325.4,
+    z1_0: 380.0,
+    z2_5: 4080.0
+  },
+  {
+    name: "s163",
+    longName: "s163",
+    lat: 34.58835,
+    lon: -118.58011,
+    thompson_vs30: 431.99,
+    cvm_vs30: 462.0,
+    z1_0: 150.0,
+    z2_5: 370.0
+  },
+  {
+    name: "s167",
+    longName: "s167",
+    lat: 34.746,
+    lon: -118.47417,
+    thompson_vs30: 293.51,
+    cvm_vs30: 302.0,
+    z1_0: 150.0,
+    z2_5: 1230.0
+  },
+  {
+    name: "s236",
+    longName: "s236",
+    lat: 34.18551,
+    lon: -118.60087,
+    thompson_vs30: 278.6,
+    cvm_vs30: 270.7,
+    z1_0: 240.0,
+    z2_5: 2350.0
+  },
+  {
+    name: "s240",
+    longName: "s240",
+    lat: 34.34317,
+    lon: -118.49545,
+    thompson_vs30: 377.05,
+    cvm_vs30: 342.6,
+    z1_0: 240.0,
+    z2_5: 2000.0
+  },
+  {
+    name: "s244",
+    longName: "s244",
+    lat: 34.50074,
+    lon: -118.38964,
+    thompson_vs30: 729.95,
+    cvm_vs30: 486.8,
+    z1_0: 150.0,
+    z2_5: 1110.0
+  },
+  {
+    name: "s248",
+    longName: "s248",
+    lat: 34.65823,
+    lon: -118.28344,
+    thompson_vs30: 351.9,
+    cvm_vs30: 357.2,
+    z1_0: 120.0,
+    z2_5: 590.0
+  },
+  {
+    name: "s309",
+    longName: "s309",
+    lat: 34.09791,
+    lon: -118.4113,
+    thompson_vs30: 483.30684379674494,
+    cvm_vs30: 494.1,
+    z1_0: 150.0,
+    z2_5: 430.0
+  },
+  {
+    name: "s313",
+    longName: "s313",
+    lat: 34.25541,
+    lon: -118.30562,
+    thompson_vs30: 353.08,
+    cvm_vs30: 363.6,
+    z1_0: 100.0,
+    z2_5: 440.0
+  },
+  {
+    name: "s317",
+    longName: "s317",
+    lat: 34.41283,
+    lon: -118.19955,
+    thompson_vs30: 727.05,
+    cvm_vs30: 542.7,
+    z1_0: 70.0,
+    z2_5: 730.0
+  },
+  {
+    name: "s321",
+    longName: "s321",
+    lat: 34.57016,
+    lon: -118.0931,
+    thompson_vs30: 374.48,
+    cvm_vs30: 376.5,
+    z1_0: 110.0,
+    z2_5: 560.0
+  },
+  {
+    name: "s385",
+    longName: "s385",
+    lat: 33.85257,
+    lon: -118.32766,
+    thompson_vs30: 333.32,
+    cvm_vs30: 293.8,
+    z1_0: 760.0,
+    z2_5: 3140.0
+  },
+  {
+    name: "s389",
+    longName: "s389",
+    lat: 34.01,
+    lon: -118.22211,
+    thompson_vs30: 358.52,
+    cvm_vs30: 277.1,
+    z1_0: 600.0,
+    z2_5: 3990.0
+  },
+  {
+    name: "s393",
+    longName: "s393",
+    lat: 34.16735,
+    lon: -118.11618,
+    thompson_vs30: 350.57,
+    cvm_vs30: 344.4,
+    z1_0: 150.0,
+    z2_5: 1240.0
+  },
+  {
+    name: "s397",
+    longName: "s397",
+    lat: 34.32461,
+    lon: -118.00986,
+    thompson_vs30: 727.36,
+    cvm_vs30: 654.4,
+    z1_0: 60.0,
+    z2_5: 740.0
+  },
+  {
+    name: "s401",
+    longName: "s401",
+    lat: 34.48178,
+    lon: -117.90315,
+    thompson_vs30: 805.29,
+    cvm_vs30: 718.7,
+    z1_0: 50.0,
+    z2_5: 610.0
+  },
+  {
+    name: "s470",
+    longName: "s470",
+    lat: 33.76452,
+    lon: -118.1391,
+    thompson_vs30: 362.86,
+    cvm_vs30: 319.5,
+    z1_0: 630.0,
+    z2_5: 2930.0
+  },
+  {
+    name: "s474",
+    longName: "s474",
+    lat: 33.9218,
+    lon: -118.03331,
+    thompson_vs30: 352.27,
+    cvm_vs30: 320.7,
+    z1_0: 620.0,
+    z2_5: 3360.0
+  },
+  {
+    name: "s478",
+    longName: "s478",
+    lat: 34.07899,
+    lon: -117.92713,
+    thompson_vs30: 303.09,
+    cvm_vs30: 281.8,
+    z1_0: 310.0,
+    z2_5: 2690.0
+  },
+  {
+    name: "s482",
+    longName: "s482",
+    lat: 34.23609,
+    lon: -117.82056,
+    thompson_vs30: 717.89,
+    cvm_vs30: 566.3,
+    z1_0: 70.0,
+    z2_5: 650.0
+  },
+  {
+    name: "s486",
+    longName: "s486",
+    lat: 34.3931,
+    lon: -117.7136,
+    thompson_vs30: 736.6,
+    cvm_vs30: 664.5,
+    z1_0: 60.0,
+    z2_5: 620.0
+  },
+  {
+    name: "s550",
+    longName: "s550",
+    lat: 33.67617,
+    lon: -117.95093,
+    thompson_vs30: 219.65,
+    cvm_vs30: 206.9,
+    z1_0: 540.0,
+    z2_5: 4050.0
+  },
+  {
+    name: "s554",
+    longName: "s554",
+    lat: 33.83329,
+    lon: -117.84489,
+    thompson_vs30: 293.4,
+    cvm_vs30: 267.1,
+    z1_0: 380.0,
+    z2_5: 2250.0
+  },
+  {
+    name: "s558",
+    longName: "s558",
+    lat: 33.99033,
+    lon: -117.73847,
+    thompson_vs30: 369.04,
+    cvm_vs30: 331.2,
+    z1_0: 260.0,
+    z2_5: 1300.0
+  },
+  {
+    name: "s562",
+    longName: "s562",
+    lat: 34.14727,
+    lon: -117.63165,
+    thompson_vs30: 351.9,
+    cvm_vs30: 342.5,
+    z1_0: 310.0,
+    z2_5: 1140.0
+  },
+  {
+    name: "s566",
+    longName: "s566",
+    lat: 34.30413,
+    lon: -117.52445,
+    thompson_vs30: 351.92,
+    cvm_vs30: 341.3,
+    z1_0: 160.0,
+    z2_5: 1490.0
+  },
+  {
+    name: "s632",
+    longName: "s632",
+    lat: 33.58753,
+    lon: -117.76313,
+    thompson_vs30: 468.05,
+    cvm_vs30: 428.5,
+    z1_0: 140.0,
+    z2_5: 1940.0
+  },
+  {
+    name: "s636",
+    longName: "s636",
+    lat: 33.7445,
+    lon: -117.65685,
+    thompson_vs30: 351.9,
+    cvm_vs30: 382.3,
+    z1_0: 120.0,
+    z2_5: 830.0
+  },
+  {
+    name: "s640",
+    longName: "s640",
+    lat: 33.90137,
+    lon: -117.55019,
+    thompson_vs30: 707.34,
+    cvm_vs30: 368.1,
+    z1_0: 150.0,
+    z2_5: 470.0
+  },
+  {
+    name: "s644",
+    longName: "s644",
+    lat: 34.05816,
+    lon: -117.44314,
+    thompson_vs30: 293.5,
+    cvm_vs30: 316.7,
+    z1_0: 160.0,
+    z2_5: 480.0
+  },
+  {
+    name: "s648",
+    longName: "s648",
+    lat: 34.21485,
+    lon: -117.3357,
+    thompson_vs30: 729.02,
+    cvm_vs30: 650.4,
+    z1_0: 60.0,
+    z2_5: 1450.0
+  },
+  {
+    name: "s716",
+    longName: "s716",
+    lat: 33.49859,
+    lon: -117.57572,
+    thompson_vs30: 468.38,
+    cvm_vs30: 431.8,
+    z1_0: 120.0,
+    z2_5: 1990.0
+  },
+  {
+    name: "s720",
+    longName: "s720",
+    lat: 33.65541,
+    lon: -117.4692,
+    thompson_vs30: 709.98,
+    cvm_vs30: 653.5,
+    z1_0: 50.0,
+    z2_5: 430.0
+  },
+  {
+    name: "s724",
+    longName: "s724",
+    lat: 33.81213,
+    lon: -117.3623,
+    thompson_vs30: 709.98,
+    cvm_vs30: 659.6,
+    z1_0: 50.0,
+    z2_5: 370.0
+  },
+  {
+    name: "s728",
+    longName: "s728",
+    lat: 33.96875,
+    lon: -117.25502,
+    thompson_vs30: 351.9,
+    cvm_vs30: 376.7,
+    z1_0: 120.0,
+    z2_5: 610.0
+  },
+  {
+    name: "s732",
+    longName: "s732",
+    lat: 34.12528,
+    lon: -117.14734,
+    thompson_vs30: 703.12,
+    cvm_vs30: 583.1,
+    z1_0: 60.0,
+    z2_5: 1160.0
+  },
+  {
+    name: "s022",
+    longName: "s022",
+    lat: 34.24505,
+    lon: -119.18086,
+    thompson_vs30: 296.92,
+    cvm_vs30: 263.5,
+    z1_0: 510.0,
+    z2_5: 4240.0
+  },
+  {
+    name: "s024",
+    longName: "s024",
+    lat: 34.32412,
+    lon: -119.12872,
+    thompson_vs30: 293.5,
+    cvm_vs30: 262.6,
+    z1_0: 820.0,
+    z2_5: 6870.0
+  },
+  {
+    name: "s026",
+    longName: "s026",
+    lat: 34.40317,
+    lon: -119.07648,
+    thompson_vs30: 416.11,
+    cvm_vs30: 369.4,
+    z1_0: 310.0,
+    z2_5: 4780.0
+  },
+  {
+    name: "s028",
+    longName: "s028",
+    lat: 34.4822,
+    lon: -119.02414,
+    thompson_vs30: 468.68,
+    cvm_vs30: 466.5,
+    z1_0: 100.0,
+    z2_5: 390.0
+  },
+  {
+    name: "s030",
+    longName: "s030",
+    lat: 34.56122,
+    lon: -118.97171,
+    thompson_vs30: 385.31,
+    cvm_vs30: 400.1,
+    z1_0: 90.0,
+    z2_5: 390.0
+  },
+  {
+    name: "s032",
+    longName: "s032",
+    lat: 34.64021,
+    lon: -118.91919,
+    thompson_vs30: 710.8,
+    cvm_vs30: 667.6,
+    z1_0: 50.0,
+    z2_5: 320.0
+  },
+  {
+    name: "s034",
+    longName: "s034",
+    lat: 34.71918,
+    lon: -118.86656,
+    thompson_vs30: 351.9,
+    cvm_vs30: 374.8,
+    z1_0: 90.0,
+    z2_5: 390.0
+  },
+  {
+    name: "s036",
+    longName: "s036",
+    lat: 34.79813,
+    lon: -118.81384,
+    thompson_vs30: 721.45,
+    cvm_vs30: 658.4,
+    z1_0: 50.0,
+    z2_5: 490.0
+  },
+  {
+    name: "s038",
+    longName: "s038",
+    lat: 34.87706,
+    lon: -118.76102,
+    thompson_vs30: 749.0,
+    cvm_vs30: 674.5,
+    z1_0: 50.0,
+    z2_5: 620.0
+  },
+  {
+    name: "s040",
+    longName: "s040",
+    lat: 34.95597,
+    lon: -118.7081,
+    thompson_vs30: 739.64,
+    cvm_vs30: 672.6,
+    z1_0: 50.0,
+    z2_5: 490.0
+  },
+  {
+    name: "s064",
+    longName: "s064",
+    lat: 34.1227,
+    lon: -119.13779,
+    thompson_vs30: 176.11,
+    cvm_vs30: 174.9,
+    z1_0: 720.0,
+    z2_5: 3020.0
+  },
+  {
+    name: "s068",
+    longName: "s068",
+    lat: 34.28078,
+    lon: -119.03347,
+    thompson_vs30: 394.73,
+    cvm_vs30: 347.4,
+    z1_0: 470.0,
+    z2_5: 2390.0
+  },
+  {
+    name: "s072",
+    longName: "s072",
+    lat: 34.43879,
+    lon: -118.92876,
+    thompson_vs30: 351.9,
+    cvm_vs30: 316.3,
+    z1_0: 520.0,
+    z2_5: 6210.0
+  },
+  {
+    name: "s076",
+    longName: "s076",
+    lat: 34.59671,
+    lon: -118.82367,
+    thompson_vs30: 712.02,
+    cvm_vs30: 665.8,
+    z1_0: 50.0,
+    z2_5: 340.0
+  },
+  {
+    name: "s080",
+    longName: "s080",
+    lat: 34.75456,
+    lon: -118.71819,
+    thompson_vs30: 714.2,
+    cvm_vs30: 437.3,
+    z1_0: 110.0,
+    z2_5: 930.0
+  },
+  {
+    name: "s084",
+    longName: "s084",
+    lat: 34.91232,
+    lon: -118.61232,
+    thompson_vs30: 715.89,
+    cvm_vs30: 644.0,
+    z1_0: 60.0,
+    z2_5: 930.0
+  },
+  {
+    name: "s109",
+    longName: "s109",
+    lat: 34.15837,
+    lon: -118.99059,
+    thompson_vs30: 407.35,
+    cvm_vs30: 471.1,
+    z1_0: 150.0,
+    z2_5: 2310.0
+  },
+  {
+    name: "s111",
+    longName: "s111",
+    lat: 34.23737,
+    lon: -118.93832,
+    thompson_vs30: 351.79,
+    cvm_vs30: 352.7,
+    z1_0: 310.0,
+    z2_5: 3140.0
+  },
+  {
+    name: "s113",
+    longName: "s113",
+    lat: 34.31634,
+    lon: -118.88595,
+    thompson_vs30: 401.32,
+    cvm_vs30: 369.5,
+    z1_0: 310.0,
+    z2_5: 2970.0
+  },
+  {
+    name: "s115",
+    longName: "s115",
+    lat: 34.3953,
+    lon: -118.83348,
+    thompson_vs30: 293.5,
+    cvm_vs30: 260.3,
+    z1_0: 1110.0,
+    z2_5: 6100.0
+  },
+  {
+    name: "s117",
+    longName: "s117",
+    lat: 34.47423,
+    lon: -118.78092,
+    thompson_vs30: 388.42,
+    cvm_vs30: 389.0,
+    z1_0: 200.0,
+    z2_5: 1870.0
+  },
+  {
+    name: "s119",
+    longName: "s119",
+    lat: 34.55314,
+    lon: -118.72826,
+    thompson_vs30: 719.09,
+    cvm_vs30: 626.0,
+    z1_0: 50.0,
+    z2_5: 440.0
+  },
+  {
+    name: "s121",
+    longName: "s121",
+    lat: 34.63204,
+    lon: -118.6755,
+    thompson_vs30: 475.92,
+    cvm_vs30: 359.1,
+    z1_0: 310.0,
+    z2_5: 400.0
+  },
+  {
+    name: "s123",
+    longName: "s123",
+    lat: 34.71091,
+    lon: -118.62264,
+    thompson_vs30: 714.96,
+    cvm_vs30: 650.8,
+    z1_0: 60.0,
+    z2_5: 530.0
+  },
+  {
+    name: "s125",
+    longName: "s125",
+    lat: 34.78976,
+    lon: -118.56969,
+    thompson_vs30: 293.5,
+    cvm_vs30: 297.6,
+    z1_0: 160.0,
+    z2_5: 1650.0
+  },
+  {
+    name: "s127",
+    longName: "s127",
+    lat: 34.86859,
+    lon: -118.51664,
+    thompson_vs30: 403.53,
+    cvm_vs30: 389.1,
+    z1_0: 130.0,
+    z2_5: 1460.0
+  },
+  {
+    name: "s153",
+    longName: "s153",
+    lat: 34.19387,
+    lon: -118.84326,
+    thompson_vs30: 420.26,
+    cvm_vs30: 288.4,
+    z1_0: 310.0,
+    z2_5: 580.0
+  },
+  {
+    name: "s157",
+    longName: "s157",
+    lat: 34.35172,
+    lon: -118.73829,
+    thompson_vs30: 508.01,
+    cvm_vs30: 424.3,
+    z1_0: 310.0,
+    z2_5: 1810.0
+  },
+  {
+    name: "s161",
+    longName: "s161",
+    lat: 34.5095,
+    lon: -118.63294,
+    thompson_vs30: 351.9,
+    cvm_vs30: 329.8,
+    z1_0: 310.0,
+    z2_5: 1500.0
+  },
+  {
+    name: "s165",
+    longName: "s165",
+    lat: 34.66718,
+    lon: -118.52719,
+    thompson_vs30: 723.43,
+    cvm_vs30: 609.9,
+    z1_0: 50.0,
+    z2_5: 350.0
+  },
+  {
+    name: "s169",
+    longName: "s169",
+    lat: 34.82479,
+    lon: -118.42106,
+    thompson_vs30: 293.5,
+    cvm_vs30: 298.6,
+    z1_0: 160.0,
+    z2_5: 1770.0
+  },
+  {
+    name: "s193",
+    longName: "s193",
+    lat: 34.07138,
+    lon: -118.80071,
+    thompson_vs30: 373.17,
+    cvm_vs30: 378.4,
+    z1_0: 110.0,
+    z2_5: 520.0
+  },
+  {
+    name: "s195",
+    longName: "s195",
+    lat: 34.1503,
+    lon: -118.7483,
+    thompson_vs30: 536.14,
+    cvm_vs30: 316.0,
+    z1_0: 310.0,
+    z2_5: 2530.0
+  },
+  {
+    name: "s197",
+    longName: "s197",
+    lat: 34.2292,
+    lon: -118.6958,
+    thompson_vs30: 502.5,
+    cvm_vs30: 471.6,
+    z1_0: 90.0,
+    z2_5: 600.0
+  },
+  {
+    name: "s199",
+    longName: "s199",
+    lat: 34.30808,
+    lon: -118.6432,
+    thompson_vs30: 491.2,
+    cvm_vs30: 442.6,
+    z1_0: 310.0,
+    z2_5: 6030.0
+  },
+  {
+    name: "s201",
+    longName: "s201",
+    lat: 34.38693,
+    lon: -118.59051,
+    thompson_vs30: 469.39,
+    cvm_vs30: 402.7,
+    z1_0: 300.0,
+    z2_5: 2980.0
+  },
+  {
+    name: "s203",
+    longName: "s203",
+    lat: 34.46577,
+    lon: -118.53772,
+    thompson_vs30: 462.14,
+    cvm_vs30: 288.4,
+    z1_0: 310.0,
+    z2_5: 2010.0
+  },
+  {
+    name: "s205",
+    longName: "s205",
+    lat: 34.54459,
+    lon: -118.48483,
+    thompson_vs30: 748.98,
+    cvm_vs30: 517.1,
+    z1_0: 90.0,
+    z2_5: 330.0
+  },
+  {
+    name: "s207",
+    longName: "s207",
+    lat: 34.62338,
+    lon: -118.43184,
+    thompson_vs30: 723.22,
+    cvm_vs30: 675.0,
+    z1_0: 50.0,
+    z2_5: 330.0
+  },
+  {
+    name: "s209",
+    longName: "s209",
+    lat: 34.70215,
+    lon: -118.37876,
+    thompson_vs30: 352.08,
+    cvm_vs30: 367.0,
+    z1_0: 130.0,
+    z2_5: 980.0
+  },
+  {
+    name: "s211",
+    longName: "s211",
+    lat: 34.7809,
+    lon: -118.32557,
+    thompson_vs30: 228.2,
+    cvm_vs30: 246.3,
+    z1_0: 170.0,
+    z2_5: 1250.0
+  },
+  {
+    name: "s234",
+    longName: "s234",
+    lat: 34.10665,
+    lon: -118.65344,
+    thompson_vs30: 504.91,
+    cvm_vs30: 386.2,
+    z1_0: 140.0,
+    z2_5: 1000.0
+  },
+  {
+    name: "s238",
+    longName: "s238",
+    lat: 34.26435,
+    lon: -118.54821,
+    thompson_vs30: 393.89,
+    cvm_vs30: 357.1,
+    z1_0: 190.0,
+    z2_5: 2650.0
+  },
+  {
+    name: "s242",
+    longName: "s242",
+    lat: 34.42197,
+    lon: -118.44259,
+    thompson_vs30: 499.37,
+    cvm_vs30: 367.1,
+    z1_0: 220.0,
+    z2_5: 1920.0
+  },
+  {
+    name: "s246",
+    longName: "s246",
+    lat: 34.5795,
+    lon: -118.33659,
+    thompson_vs30: 716.2,
+    cvm_vs30: 654.2,
+    z1_0: 50.0,
+    z2_5: 490.0
+  },
+  {
+    name: "s250",
+    longName: "s250",
+    lat: 34.73694,
+    lon: -118.23019,
+    thompson_vs30: 338.35,
+    cvm_vs30: 336.2,
+    z1_0: 150.0,
+    z2_5: 1200.0
+  },
+  {
+    name: "s271",
+    longName: "s271",
+    lat: 34.06293,
+    lon: -118.55867,
+    thompson_vs30: 502.5,
+    cvm_vs30: 459.0,
+    z1_0: 150.0,
+    z2_5: 480.0
+  },
+  {
+    name: "s273",
+    longName: "s273",
+    lat: 34.14175,
+    lon: -118.50604,
+    thompson_vs30: 409.09,
+    cvm_vs30: 380.1,
+    z1_0: 110.0,
+    z2_5: 630.0
+  },
+  {
+    name: "s275",
+    longName: "s275",
+    lat: 34.22055,
+    lon: -118.45331,
+    thompson_vs30: 301.05,
+    cvm_vs30: 276.0,
+    z1_0: 400.0,
+    z2_5: 2780.0
+  },
+  {
+    name: "s277",
+    longName: "s277",
+    lat: 34.29933,
+    lon: -118.40049,
+    thompson_vs30: 638.44,
+    cvm_vs30: 456.3,
+    z1_0: 170.0,
+    z2_5: 1730.0
+  },
+  {
+    name: "s279",
+    longName: "s279",
+    lat: 34.37809,
+    lon: -118.34757,
+    thompson_vs30: 902.48,
+    cvm_vs30: 667.5,
+    z1_0: 30.0,
+    z2_5: 480.0
+  },
+  {
+    name: "s281",
+    longName: "s281",
+    lat: 34.45683,
+    lon: -118.29455,
+    thompson_vs30: 487.23,
+    cvm_vs30: 454.5,
+    z1_0: 110.0,
+    z2_5: 1060.0
+  },
+  {
+    name: "s283",
+    longName: "s283",
+    lat: 34.53554,
+    lon: -118.24143,
+    thompson_vs30: 715.37,
+    cvm_vs30: 650.4,
+    z1_0: 60.0,
+    z2_5: 540.0
+  },
+  {
+    name: "s285",
+    longName: "s285",
+    lat: 34.61423,
+    lon: -118.18822,
+    thompson_vs30: 293.71,
+    cvm_vs30: 313.2,
+    z1_0: 120.0,
+    z2_5: 530.0
+  },
+  {
+    name: "s287",
+    longName: "s287",
+    lat: 34.69291,
+    lon: -118.1349,
+    thompson_vs30: 293.5,
+    cvm_vs30: 291.4,
+    z1_0: 180.0,
+    z2_5: 1800.0
+  },
+  {
+    name: "s307",
+    longName: "s307",
+    lat: 34.01913,
+    lon: -118.46399,
+    thompson_vs30: 388.66,
+    cvm_vs30: 337.6,
+    z1_0: 620.0,
+    z2_5: 4880.0
+  },
+  {
+    name: "s311",
+    longName: "s311",
+    lat: 34.17667,
+    lon: -118.35851,
+    thompson_vs30: 313.47,
+    cvm_vs30: 279.9,
+    z1_0: 610.0,
+    z2_5: 1170.0
+  },
+  {
+    name: "s315",
+    longName: "s315",
+    lat: 34.33413,
+    lon: -118.25264,
+    thompson_vs30: 767.68,
+    cvm_vs30: 622.8,
+    z1_0: 50.0,
+    z2_5: 430.0
+  },
+  {
+    name: "s319",
+    longName: "s319",
+    lat: 34.49151,
+    lon: -118.14637,
+    thompson_vs30: 422.96,
+    cvm_vs30: 410.0,
+    z1_0: 110.0,
+    z2_5: 710.0
+  },
+  {
+    name: "s323",
+    longName: "s323",
+    lat: 34.64879,
+    lon: -118.03972,
+    thompson_vs30: 228.2,
+    cvm_vs30: 248.3,
+    z1_0: 160.0,
+    z2_5: 1040.0
+  },
+  {
+    name: "s345",
+    longName: "s345",
+    lat: 33.97525,
+    lon: -118.36942,
+    thompson_vs30: 407.07,
+    cvm_vs30: 349.8,
+    z1_0: 580.0,
+    z2_5: 4060.0
+  },
+  {
+    name: "s347",
+    longName: "s347",
+    lat: 34.05399,
+    lon: -118.31666,
+    thompson_vs30: 296.94,
+    cvm_vs30: 276.2,
+    z1_0: 330.0,
+    z2_5: 2090.0
+  },
+  {
+    name: "s349",
+    longName: "s349",
+    lat: 34.13272,
+    lon: -118.2638,
+    thompson_vs30: 390.82,
+    cvm_vs30: 388.7,
+    z1_0: 160.0,
+    z2_5: 580.0
+  },
+  {
+    name: "s351",
+    longName: "s351",
+    lat: 34.21142,
+    lon: -118.21085,
+    thompson_vs30: 450.31,
+    cvm_vs30: 380.2,
+    z1_0: 90.0,
+    z2_5: 410.0
+  },
+  {
+    name: "s353",
+    longName: "s353",
+    lat: 34.2901,
+    lon: -118.1578,
+    thompson_vs30: 732.67,
+    cvm_vs30: 605.4,
+    z1_0: 50.0,
+    z2_5: 480.0
+  },
+  {
+    name: "s355",
+    longName: "s355",
+    lat: 34.36876,
+    lon: -118.10466,
+    thompson_vs30: 721.29,
+    cvm_vs30: 650.1,
+    z1_0: 60.0,
+    z2_5: 700.0
+  },
+  {
+    name: "s357",
+    longName: "s357",
+    lat: 34.4474,
+    lon: -118.05142,
+    thompson_vs30: 725.47,
+    cvm_vs30: 656.7,
+    z1_0: 60.0,
+    z2_5: 580.0
+  },
+  {
+    name: "s359",
+    longName: "s359",
+    lat: 34.52601,
+    lon: -117.99807,
+    thompson_vs30: 372.89,
+    cvm_vs30: 367.8,
+    z1_0: 110.0,
+    z2_5: 560.0
+  },
+  {
+    name: "s361",
+    longName: "s361",
+    lat: 34.6046,
+    lon: -117.94463,
+    thompson_vs30: 293.5,
+    cvm_vs30: 307.8,
+    z1_0: 130.0,
+    z2_5: 640.0
+  },
+  {
+    name: "s383",
+    longName: "s383",
+    lat: 33.77382,
+    lon: -118.38029,
+    thompson_vs30: 309.13,
+    cvm_vs30: 309.2,
+    z1_0: 160.0,
+    z2_5: 1450.0
+  },
+  {
+    name: "s387",
+    longName: "s387",
+    lat: 33.9313,
+    lon: -118.27493,
+    thompson_vs30: 334.19,
+    cvm_vs30: 296.0,
+    z1_0: 670.0,
+    z2_5: 4060.0
+  },
+  {
+    name: "s391",
+    longName: "s391",
+    lat: 34.08869,
+    lon: -118.16919,
+    thompson_vs30: 351.91,
+    cvm_vs30: 330.7,
+    z1_0: 310.0,
+    z2_5: 2130.0
+  },
+  {
+    name: "s395",
+    longName: "s395",
+    lat: 34.24599,
+    lon: -118.06307,
+    thompson_vs30: 728.46,
+    cvm_vs30: 636.2,
+    z1_0: 60.0,
+    z2_5: 880.0
+  },
+  {
+    name: "s399",
+    longName: "s399",
+    lat: 34.40321,
+    lon: -117.95656,
+    thompson_vs30: 779.1,
+    cvm_vs30: 700.7,
+    z1_0: 50.0,
+    z2_5: 550.0
+  },
+  {
+    name: "s403",
+    longName: "s403",
+    lat: 34.56033,
+    lon: -117.84965,
+    thompson_vs30: 293.84,
+    cvm_vs30: 307.3,
+    z1_0: 130.0,
+    z2_5: 660.0
+  },
+  {
+    name: "s427",
+    longName: "s427",
+    lat: 33.72987,
+    lon: -118.28602,
+    thompson_vs30: 330.62,
+    cvm_vs30: 305.7,
+    z1_0: 310.0,
+    z2_5: 1840.0
+  },
+  {
+    name: "s429",
+    longName: "s429",
+    lat: 33.80858,
+    lon: -118.23333,
+    thompson_vs30: 292.62,
+    cvm_vs30: 240.4,
+    z1_0: 710.0,
+    z2_5: 3650.0
+  },
+  {
+    name: "s431",
+    longName: "s431",
+    lat: 33.88727,
+    lon: -118.18054,
+    thompson_vs30: 239.37,
+    cvm_vs30: 217.9,
+    z1_0: 840.0,
+    z2_5: 5080.0
+  },
+  {
+    name: "s433",
+    longName: "s433",
+    lat: 33.96594,
+    lon: -118.12766,
+    thompson_vs30: 230.01,
+    cvm_vs30: 212.8,
+    z1_0: 720.0,
+    z2_5: 4510.0
+  },
+  {
+    name: "s435",
+    longName: "s435",
+    lat: 34.04458,
+    lon: -118.07468,
+    thompson_vs30: 293.3,
+    cvm_vs30: 265.2,
+    z1_0: 490.0,
+    z2_5: 3400.0
+  },
+  {
+    name: "s437",
+    longName: "s437",
+    lat: 34.12321,
+    lon: -118.02161,
+    thompson_vs30: 309.67,
+    cvm_vs30: 293.5,
+    z1_0: 240.0,
+    z2_5: 2440.0
+  },
+  {
+    name: "s439",
+    longName: "s439",
+    lat: 34.20181,
+    lon: -117.96843,
+    thompson_vs30: 722.21,
+    cvm_vs30: 591.7,
+    z1_0: 60.0,
+    z2_5: 1220.0
+  },
+  {
+    name: "s441",
+    longName: "s441",
+    lat: 34.28039,
+    lon: -117.91516,
+    thompson_vs30: 728.17,
+    cvm_vs30: 655.9,
+    z1_0: 60.0,
+    z2_5: 690.0
+  },
+  {
+    name: "s443",
+    longName: "s443",
+    lat: 34.35895,
+    lon: -117.8618,
+    thompson_vs30: 804.58,
+    cvm_vs30: 722.8,
+    z1_0: 40.0,
+    z2_5: 540.0
+  },
+  {
+    name: "s445",
+    longName: "s445",
+    lat: 34.43748,
+    lon: -117.80833,
+    thompson_vs30: 351.9,
+    cvm_vs30: 395.3,
+    z1_0: 110.0,
+    z2_5: 640.0
+  },
+  {
+    name: "s447",
+    longName: "s447",
+    lat: 34.51599,
+    lon: -117.75476,
+    thompson_vs30: 352.36,
+    cvm_vs30: 351.7,
+    z1_0: 130.0,
+    z2_5: 830.0
+  },
+  {
+    name: "s472",
+    longName: "s472",
+    lat: 33.84317,
+    lon: -118.08625,
+    thompson_vs30: 228.53,
+    cvm_vs30: 210.2,
+    z1_0: 810.0,
+    z2_5: 4740.0
+  },
+  {
+    name: "s476",
+    longName: "s476",
+    lat: 34.00041,
+    lon: -117.98027,
+    thompson_vs30: 411.81,
+    cvm_vs30: 353.3,
+    z1_0: 310.0,
+    z2_5: 4520.0
+  },
+  {
+    name: "s480",
+    longName: "s480",
+    lat: 34.15755,
+    lon: -117.87389,
+    thompson_vs30: 715.6,
+    cvm_vs30: 588.9,
+    z1_0: 60.0,
+    z2_5: 1280.0
+  },
+  {
+    name: "s484",
+    longName: "s484",
+    lat: 34.31461,
+    lon: -117.76713,
+    thompson_vs30: 732.42,
+    cvm_vs30: 665.4,
+    z1_0: 50.0,
+    z2_5: 520.0
+  },
+  {
+    name: "s488",
+    longName: "s488",
+    lat: 34.47157,
+    lon: -117.65998,
+    thompson_vs30: 351.9,
+    cvm_vs30: 344.6,
+    z1_0: 150.0,
+    z2_5: 1250.0
+  },
+  {
+    name: "s510",
+    longName: "s510",
+    lat: 33.72038,
+    lon: -118.04497,
+    thompson_vs30: 344.07,
+    cvm_vs30: 253.5,
+    z1_0: 580.0,
+    z2_5: 3160.0
+  },
+  {
+    name: "s512",
+    longName: "s512",
+    lat: 33.79899,
+    lon: -117.99206,
+    thompson_vs30: 230.07,
+    cvm_vs30: 212.8,
+    z1_0: 730.0,
+    z2_5: 4730.0
+  },
+  {
+    name: "s514",
+    longName: "s514",
+    lat: 33.87758,
+    lon: -117.93905,
+    thompson_vs30: 370.27,
+    cvm_vs30: 329.9,
+    z1_0: 630.0,
+    z2_5: 4690.0
+  },
+  {
+    name: "s516",
+    longName: "s516",
+    lat: 33.95615,
+    lon: -117.88595,
+    thompson_vs30: 334.74,
+    cvm_vs30: 310.5,
+    z1_0: 310.0,
+    z2_5: 2190.0
+  },
+  {
+    name: "s518",
+    longName: "s518",
+    lat: 34.0347,
+    lon: -117.83275,
+    thompson_vs30: 375.52,
+    cvm_vs30: 306.6,
+    z1_0: 400.0,
+    z2_5: 1100.0
+  },
+  {
+    name: "s520",
+    longName: "s520",
+    lat: 34.11322,
+    lon: -117.77945,
+    thompson_vs30: 383.2,
+    cvm_vs30: 358.4,
+    z1_0: 150.0,
+    z2_5: 680.0
+  },
+  {
+    name: "s522",
+    longName: "s522",
+    lat: 34.19172,
+    lon: -117.72606,
+    thompson_vs30: 711.58,
+    cvm_vs30: 640.7,
+    z1_0: 60.0,
+    z2_5: 950.0
+  },
+  {
+    name: "s524",
+    longName: "s524",
+    lat: 34.2702,
+    lon: -117.67257,
+    thompson_vs30: 714.0,
+    cvm_vs30: 642.4,
+    z1_0: 60.0,
+    z2_5: 860.0
+  },
+  {
+    name: "s526",
+    longName: "s526",
+    lat: 34.34865,
+    lon: -117.61898,
+    thompson_vs30: 363.12,
+    cvm_vs30: 422.3,
+    z1_0: 120.0,
+    z2_5: 1090.0
+  },
+  {
+    name: "s528",
+    longName: "s528",
+    lat: 34.42708,
+    lon: -117.56529,
+    thompson_vs30: 351.91,
+    cvm_vs30: 337.8,
+    z1_0: 170.0,
+    z2_5: 1620.0
+  },
+  {
+    name: "s552",
+    longName: "s552",
+    lat: 33.75474,
+    lon: -117.89795,
+    thompson_vs30: 220.6,
+    cvm_vs30: 210.8,
+    z1_0: 460.0,
+    z2_5: 4830.0
+  },
+  {
+    name: "s556",
+    longName: "s556",
+    lat: 33.91182,
+    lon: -117.79173,
+    thompson_vs30: 303.63,
+    cvm_vs30: 282.7,
+    z1_0: 300.0,
+    z2_5: 2360.0
+  },
+  {
+    name: "s560",
+    longName: "s560",
+    lat: 34.06881,
+    lon: -117.68511,
+    thompson_vs30: 293.5,
+    cvm_vs30: 305.5,
+    z1_0: 170.0,
+    z2_5: 710.0
+  },
+  {
+    name: "s564",
+    longName: "s564",
+    lat: 34.22571,
+    lon: -117.5781,
+    thompson_vs30: 710.96,
+    cvm_vs30: 630.3,
+    z1_0: 70.0,
+    z2_5: 1440.0
+  },
+  {
+    name: "s568",
+    longName: "s568",
+    lat: 34.38252,
+    lon: -117.4707,
+    thompson_vs30: 351.9,
+    cvm_vs30: 343.0,
+    z1_0: 160.0,
+    z2_5: 1600.0
+  },
+  {
+    name: "s591",
+    longName: "s591",
+    lat: 33.63189,
+    lon: -117.85698,
+    thompson_vs30: 386.46,
+    cvm_vs30: 364.2,
+    z1_0: 160.0,
+    z2_5: 2310.0
+  },
+  {
+    name: "s593",
+    longName: "s593",
+    lat: 33.71042,
+    lon: -117.80395,
+    thompson_vs30: 226.3,
+    cvm_vs30: 230.0,
+    z1_0: 310.0,
+    z2_5: 1790.0
+  },
+  {
+    name: "s595",
+    longName: "s595",
+    lat: 33.78893,
+    lon: -117.75082,
+    thompson_vs30: 454.13,
+    cvm_vs30: 413.7,
+    z1_0: 140.0,
+    z2_5: 1540.0
+  },
+  {
+    name: "s597",
+    longName: "s597",
+    lat: 33.86742,
+    lon: -117.6976,
+    thompson_vs30: 449.43,
+    cvm_vs30: 425.7,
+    z1_0: 120.0,
+    z2_5: 1310.0
+  },
+  {
+    name: "s599",
+    longName: "s599",
+    lat: 33.94589,
+    lon: -117.64428,
+    thompson_vs30: 351.61,
+    cvm_vs30: 322.4,
+    z1_0: 270.0,
+    z2_5: 910.0
+  },
+  {
+    name: "s601",
+    longName: "s601",
+    lat: 34.02433,
+    lon: -117.59086,
+    thompson_vs30: 293.5,
+    cvm_vs30: 266.9,
+    z1_0: 200.0,
+    z2_5: 520.0
+  },
+  {
+    name: "s603",
+    longName: "s603",
+    lat: 34.10275,
+    lon: -117.53735,
+    thompson_vs30: 293.5,
+    cvm_vs30: 309.6,
+    z1_0: 180.0,
+    z2_5: 590.0
+  },
+  {
+    name: "s605",
+    longName: "s605",
+    lat: 34.18115,
+    lon: -117.48374,
+    thompson_vs30: 711.36,
+    cvm_vs30: 585.0,
+    z1_0: 60.0,
+    z2_5: 1080.0
+  },
+  {
+    name: "s607",
+    longName: "s607",
+    lat: 34.25952,
+    lon: -117.43002,
+    thompson_vs30: 452.32,
+    cvm_vs30: 501.4,
+    z1_0: 100.0,
+    z2_5: 1270.0
+  },
+  {
+    name: "s609",
+    longName: "s609",
+    lat: 34.33787,
+    lon: -117.37621,
+    thompson_vs30: 463.93,
+    cvm_vs30: 435.1,
+    z1_0: 120.0,
+    z2_5: 1310.0
+  },
+  {
+    name: "s634",
+    longName: "s634",
+    lat: 33.66602,
+    lon: -117.71004,
+    thompson_vs30: 351.9,
+    cvm_vs30: 344.3,
+    z1_0: 150.0,
+    z2_5: 1370.0
+  },
+  {
+    name: "s638",
+    longName: "s638",
+    lat: 33.82295,
+    lon: -117.60357,
+    thompson_vs30: 705.23,
+    cvm_vs30: 627.3,
+    z1_0: 70.0,
+    z2_5: 1190.0
+  },
+  {
+    name: "s642",
+    longName: "s642",
+    lat: 33.97978,
+    lon: -117.49671,
+    thompson_vs30: 351.9,
+    cvm_vs30: 363.5,
+    z1_0: 150.0,
+    z2_5: 420.0
+  },
+  {
+    name: "s646",
+    longName: "s646",
+    lat: 34.13652,
+    lon: -117.38947,
+    thompson_vs30: 293.51,
+    cvm_vs30: 304.1,
+    z1_0: 310.0,
+    z2_5: 860.0
+  },
+  {
+    name: "s650",
+    longName: "s650",
+    lat: 34.29316,
+    lon: -117.28183,
+    thompson_vs30: 687.27,
+    cvm_vs30: 614.1,
+    z1_0: 70.0,
+    z2_5: 1470.0
+  },
+  {
+    name: "s674",
+    longName: "s674",
+    lat: 33.5431,
+    lon: -117.66938,
+    thompson_vs30: 383.12,
+    cvm_vs30: 364.1,
+    z1_0: 160.0,
+    z2_5: 2080.0
+  },
+  {
+    name: "s676",
+    longName: "s676",
+    lat: 33.62155,
+    lon: -117.61622,
+    thompson_vs30: 387.82,
+    cvm_vs30: 377.3,
+    z1_0: 130.0,
+    z2_5: 1120.0
+  },
+  {
+    name: "s678",
+    longName: "s678",
+    lat: 33.69999,
+    lon: -117.56298,
+    thompson_vs30: 709.4,
+    cvm_vs30: 639.6,
+    z1_0: 60.0,
+    z2_5: 780.0
+  },
+  {
+    name: "s680",
+    longName: "s680",
+    lat: 33.7784,
+    lon: -117.50964,
+    thompson_vs30: 351.9,
+    cvm_vs30: 382.9,
+    z1_0: 120.0,
+    z2_5: 960.0
+  },
+  {
+    name: "s682",
+    longName: "s682",
+    lat: 33.85679,
+    lon: -117.4562,
+    thompson_vs30: 709.54,
+    cvm_vs30: 651.1,
+    z1_0: 50.0,
+    z2_5: 450.0
+  },
+  {
+    name: "s684",
+    longName: "s684",
+    lat: 33.93515,
+    lon: -117.40266,
+    thompson_vs30: 379.01,
+    cvm_vs30: 363.6,
+    z1_0: 150.0,
+    z2_5: 390.0
+  },
+  {
+    name: "s686",
+    longName: "s686",
+    lat: 34.01349,
+    lon: -117.34903,
+    thompson_vs30: 382.91,
+    cvm_vs30: 272.6,
+    z1_0: 200.0,
+    z2_5: 450.0
+  },
+  {
+    name: "s688",
+    longName: "s688",
+    lat: 34.09181,
+    lon: -117.2953,
+    thompson_vs30: 294.81,
+    cvm_vs30: 262.9,
+    z1_0: 400.0,
+    z2_5: 1350.0
+  },
+  {
+    name: "s690",
+    longName: "s690",
+    lat: 34.1701,
+    lon: -117.24147,
+    thompson_vs30: 377.95,
+    cvm_vs30: 417.8,
+    z1_0: 110.0,
+    z2_5: 1470.0
+  },
+  {
+    name: "s692",
+    longName: "s692",
+    lat: 34.24837,
+    lon: -117.18754,
+    thompson_vs30: 691.44,
+    cvm_vs30: 620.8,
+    z1_0: 70.0,
+    z2_5: 1380.0
+  },
+  {
+    name: "s718",
+    longName: "s718",
+    lat: 33.57701,
+    lon: -117.52251,
+    thompson_vs30: 502.5,
+    cvm_vs30: 483.8,
+    z1_0: 90.0,
+    z2_5: 490.0
+  },
+  {
+    name: "s722",
+    longName: "s722",
+    lat: 33.73378,
+    lon: -117.4158,
+    thompson_vs30: 351.91,
+    cvm_vs30: 373.1,
+    z1_0: 100.0,
+    z2_5: 450.0
+  },
+  {
+    name: "s726",
+    longName: "s726",
+    lat: 33.89045,
+    lon: -117.30871,
+    thompson_vs30: 709.91,
+    cvm_vs30: 652.7,
+    z1_0: 50.0,
+    z2_5: 440.0
+  },
+  {
+    name: "s730",
+    longName: "s730",
+    lat: 34.04703,
+    lon: -117.20123,
+    thompson_vs30: 360.55,
+    cvm_vs30: 347.2,
+    z1_0: 170.0,
+    z2_5: 690.0
+  },
+  {
+    name: "s734",
+    longName: "s734",
+    lat: 34.20351,
+    lon: -117.09335,
+    thompson_vs30: 705.18,
+    cvm_vs30: 626.0,
+    z1_0: 70.0,
+    z2_5: 1720.0
+  },
+  {
+    name: "s758",
+    longName: "s758",
+    lat: 33.37562,
+    lon: -117.53532,
+    thompson_vs30: 468.4,
+    cvm_vs30: 445.0,
+    z1_0: 110.0,
+    z2_5: 1190.0
+  },
+  {
+    name: "s760",
+    longName: "s760",
+    lat: 33.45402,
+    lon: -117.48215,
+    thompson_vs30: 502.5,
+    cvm_vs30: 481.0,
+    z1_0: 90.0,
+    z2_5: 540.0
+  },
+  {
+    name: "s762",
+    longName: "s762",
+    lat: 33.5324,
+    lon: -117.42888,
+    thompson_vs30: 710.09,
+    cvm_vs30: 662.1,
+    z1_0: 50.0,
+    z2_5: 350.0
+  },
+  {
+    name: "s764",
+    longName: "s764",
+    lat: 33.61075,
+    lon: -117.37552,
+    thompson_vs30: 710.08,
+    cvm_vs30: 663.0,
+    z1_0: 50.0,
+    z2_5: 350.0
+  },
+  {
+    name: "s766",
+    longName: "s766",
+    lat: 33.68909,
+    lon: -117.32206,
+    thompson_vs30: 365.83,
+    cvm_vs30: 471.0,
+    z1_0: 70.0,
+    z2_5: 330.0
+  },
+  {
+    name: "s768",
+    longName: "s768",
+    lat: 33.76739,
+    lon: -117.26851,
+    thompson_vs30: 351.9,
+    cvm_vs30: 613.1,
+    z1_0: 50.0,
+    z2_5: 260.0
+  },
+  {
+    name: "s770",
+    longName: "s770",
+    lat: 33.84568,
+    lon: -117.21485,
+    thompson_vs30: 293.5,
+    cvm_vs30: 320.5,
+    z1_0: 110.0,
+    z2_5: 430.0
+  },
+  {
+    name: "s772",
+    longName: "s772",
+    lat: 33.92394,
+    lon: -117.1611,
+    thompson_vs30: 351.9,
+    cvm_vs30: 349.9,
+    z1_0: 130.0,
+    z2_5: 1020.0
+  },
+  {
+    name: "s774",
+    longName: "s774",
+    lat: 34.00218,
+    lon: -117.10725,
+    thompson_vs30: 397.64,
+    cvm_vs30: 273.3,
+    z1_0: 310.0,
+    z2_5: 2000.0
+  },
+  {
+    name: "s776",
+    longName: "s776",
+    lat: 34.08039,
+    lon: -117.05331,
+    thompson_vs30: 352.22,
+    cvm_vs30: 339.0,
+    z1_0: 310.0,
+    z2_5: 1520.0
+  },
+  {
+    name: "s778",
+    longName: "s778",
+    lat: 34.15858,
+    lon: -116.99926,
+    thompson_vs30: 709.18,
+    cvm_vs30: 632.0,
+    z1_0: 70.0,
+    z2_5: 1280.0
+  },
+  {
+    name: "s001",
+    longName: "s001",
+    lat: 34.26667,
+    lon: -119.22848,
+    thompson_vs30: 345.7,
+    cvm_vs30: 273.0,
+    z1_0: 760.0,
+    z2_5: 6200.0
+  },
+  {
+    name: "s003",
+    longName: "s003",
+    lat: 34.34576,
+    lon: -119.17637,
+    thompson_vs30: 351.9,
+    cvm_vs30: 345.4,
+    z1_0: 310.0,
+    z2_5: 5190.0
+  },
+  {
+    name: "s035",
+    longName: "s035",
+    lat: 34.75866,
+    lon: -118.84021,
+    thompson_vs30: 471.87,
+    cvm_vs30: 465.5,
+    z1_0: 80.0,
+    z2_5: 420.0
+  },
+  {
+    name: "s043",
+    longName: "s043",
+    lat: 34.18388,
+    lon: -119.15931,
+    thompson_vs30: 228.04,
+    cvm_vs30: 213.7,
+    z1_0: 550.0,
+    z2_5: 3190.0
+  },
+  {
+    name: "s048",
+    longName: "s048",
+    lat: 34.38149,
+    lon: -119.02881,
+    thompson_vs30: 497.17,
+    cvm_vs30: 396.3,
+    z1_0: 910.0,
+    z2_5: 6060.0
+  },
+  {
+    name: "s071",
+    longName: "s071",
+    lat: 34.39929,
+    lon: -118.95498,
+    thompson_vs30: 351.9,
+    cvm_vs30: 281.4,
+    z1_0: 950.0,
+    z2_5: 6620.0
+  },
+  {
+    name: "s081",
+    longName: "s081",
+    lat: 34.79401,
+    lon: -118.69176,
+    thompson_vs30: 384.21,
+    cvm_vs30: 369.2,
+    z1_0: 140.0,
+    z2_5: 1600.0
+  },
+  {
+    name: "s145",
+    longName: "s145",
+    lat: 34.72848,
+    lon: -118.54843,
+    thompson_vs30: 714.16,
+    cvm_vs30: 647.2,
+    z1_0: 60.0,
+    z2_5: 600.0
+  },
+  {
+    name: "s187",
+    longName: "s187",
+    lat: 34.68469,
+    lon: -118.45299,
+    thompson_vs30: 716.66,
+    cvm_vs30: 620.3,
+    z1_0: 60.0,
+    z2_5: 470.0
+  },
+  {
+    name: "s228",
+    longName: "s228",
+    lat: 34.64083,
+    lon: -118.35766,
+    thompson_vs30: 351.93,
+    cvm_vs30: 364.6,
+    z1_0: 120.0,
+    z2_5: 570.0
+  },
+  {
+    name: "s266",
+    longName: "s266",
+    lat: 34.59689,
+    lon: -118.26242,
+    thompson_vs30: 417.84,
+    cvm_vs30: 417.4,
+    z1_0: 100.0,
+    z2_5: 470.0
+  },
+  {
+    name: "s292",
+    longName: "s292",
+    lat: 34.15923,
+    lon: -118.43229,
+    thompson_vs30: 280.23,
+    cvm_vs30: 268.3,
+    z1_0: 350.0,
+    z2_5: 1330.0
+  },
+  {
+    name: "s302",
+    longName: "s302",
+    lat: 34.55287,
+    lon: -118.16728,
+    thompson_vs30: 712.98,
+    cvm_vs30: 487.3,
+    z1_0: 90.0,
+    z2_5: 520.0
+  },
+  {
+    name: "s328",
+    longName: "s328",
+    lat: 34.07596,
+    lon: -118.36397,
+    thompson_vs30: 352.96,
+    cvm_vs30: 287.3,
+    z1_0: 330.0,
+    z2_5: 2110.0
+  },
+  {
+    name: "s339",
+    longName: "s339",
+    lat: 34.50878,
+    lon: -118.07224,
+    thompson_vs30: 524.63,
+    cvm_vs30: 496.3,
+    z1_0: 90.0,
+    z2_5: 580.0
+  },
+  {
+    name: "s344",
+    longName: "s344",
+    lat: 33.93587,
+    lon: -118.39576,
+    thompson_vs30: 377.73,
+    cvm_vs30: 330.6,
+    z1_0: 690.0,
+    z2_5: 4060.0
+  },
+  {
+    name: "s346",
+    longName: "s346",
+    lat: 34.01462,
+    lon: -118.34305,
+    thompson_vs30: 227.73,
+    cvm_vs30: 241.9,
+    z1_0: 650.0,
+    z2_5: 4180.0
+  },
+  {
+    name: "s348",
+    longName: "s348",
+    lat: 34.09336,
+    lon: -118.29024,
+    thompson_vs30: 990.45,
+    cvm_vs30: 431.8,
+    z1_0: 310.0,
+    z2_5: 1930.0
+  },
+  {
+    name: "s365",
+    longName: "s365",
+    lat: 33.95328,
+    lon: -118.32216,
+    thompson_vs30: 363.0,
+    cvm_vs30: 320.0,
+    z1_0: 590.0,
+    z2_5: 3620.0
+  },
+  {
+    name: "s366",
+    longName: "s366",
+    lat: 33.99265,
+    lon: -118.29578,
+    thompson_vs30: 230.58,
+    cvm_vs30: 212.1,
+    z1_0: 800.0,
+    z2_5: 5220.0
+  },
+  {
+    name: "s378",
+    longName: "s378",
+    lat: 34.46461,
+    lon: -117.9773,
+    thompson_vs30: 753.57,
+    cvm_vs30: 681.0,
+    z1_0: 50.0,
+    z2_5: 530.0
+  },
+  {
+    name: "s380",
+    longName: "s380",
+    lat: 34.54319,
+    lon: -117.92388,
+    thompson_vs30: 293.57,
+    cvm_vs30: 307.1,
+    z1_0: 130.0,
+    z2_5: 660.0
+  },
+  {
+    name: "s388",
+    longName: "s388",
+    lat: 33.97065,
+    lon: -118.24853,
+    thompson_vs30: 228.62,
+    cvm_vs30: 210.0,
+    z1_0: 830.0,
+    z2_5: 5630.0
+  },
+  {
+    name: "s410",
+    longName: "s410",
+    lat: 33.94864,
+    lon: -118.20131,
+    thompson_vs30: 229.1,
+    cvm_vs30: 209.7,
+    z1_0: 880.0,
+    z2_5: 5660.0
+  },
+  {
+    name: "s424",
+    longName: "s424",
+    lat: 34.49891,
+    lon: -117.82897,
+    thompson_vs30: 353.49,
+    cvm_vs30: 386.1,
+    z1_0: 120.0,
+    z2_5: 690.0
+  },
+  {
+    name: "s451",
+    longName: "s451",
+    lat: 33.8259,
+    lon: -118.15981,
+    thompson_vs30: 293.46,
+    cvm_vs30: 311.4,
+    z1_0: 630.0,
+    z2_5: 4690.0
+  },
+  {
+    name: "s453",
+    longName: "s453",
+    lat: 33.90456,
+    lon: -118.10694,
+    thompson_vs30: 297.57,
+    cvm_vs30: 247.5,
+    z1_0: 810.0,
+    z2_5: 4720.0
+  },
+  {
+    name: "s465",
+    longName: "s465",
+    lat: 34.37605,
+    lon: -117.78771,
+    thompson_vs30: 783.01,
+    cvm_vs30: 705.2,
+    z1_0: 50.0,
+    z2_5: 520.0
+  },
+  {
+    name: "s467",
+    longName: "s467",
+    lat: 34.45455,
+    lon: -117.73417,
+    thompson_vs30: 417.98,
+    cvm_vs30: 404.5,
+    z1_0: 120.0,
+    z2_5: 830.0
+  },
+  {
+    name: "s491",
+    longName: "s491",
+    lat: 33.78178,
+    lon: -118.06559,
+    thompson_vs30: 226.71,
+    cvm_vs30: 211.1,
+    z1_0: 680.0,
+    z2_5: 3770.0
+  },
+  {
+    name: "s493",
+    longName: "s493",
+    lat: 33.8604,
+    lon: -118.01267,
+    thompson_vs30: 227.31,
+    cvm_vs30: 238.8,
+    z1_0: 730.0,
+    z2_5: 3930.0
+  },
+  {
+    name: "s505",
+    longName: "s505",
+    lat: 34.33165,
+    lon: -117.69307,
+    thompson_vs30: 721.43,
+    cvm_vs30: 654.2,
+    z1_0: 60.0,
+    z2_5: 570.0
+  },
+  {
+    name: "s507",
+    longName: "s507",
+    lat: 34.41012,
+    lon: -117.63946,
+    thompson_vs30: 428.84,
+    cvm_vs30: 391.2,
+    z1_0: 130.0,
+    z2_5: 1180.0
+  },
+  {
+    name: "s531",
+    longName: "s531",
+    lat: 33.73758,
+    lon: -117.97148,
+    thompson_vs30: 227.03,
+    cvm_vs30: 213.0,
+    z1_0: 630.0,
+    z2_5: 4470.0
+  },
+  {
+    name: "s541",
+    longName: "s541",
+    lat: 34.13027,
+    lon: -117.70557,
+    thompson_vs30: 351.9,
+    cvm_vs30: 344.2,
+    z1_0: 160.0,
+    z2_5: 1100.0
+  },
+  {
+    name: "s545",
+    longName: "s545",
+    lat: 34.28718,
+    lon: -117.59853,
+    thompson_vs30: 712.01,
+    cvm_vs30: 633.3,
+    z1_0: 70.0,
+    z2_5: 1290.0
+  },
+  {
+    name: "s547",
+    longName: "s547",
+    lat: 34.36561,
+    lon: -117.54485,
+    thompson_vs30: 351.93,
+    cvm_vs30: 339.5,
+    z1_0: 160.0,
+    z2_5: 1500.0
+  },
+  {
+    name: "s586",
+    longName: "s586",
+    lat: 34.24264,
+    lon: -117.50408,
+    thompson_vs30: 351.97,
+    cvm_vs30: 393.3,
+    z1_0: 140.0,
+    z2_5: 1450.0
+  },
+  {
+    name: "s588",
+    longName: "s588",
+    lat: 34.32102,
+    lon: -117.45035,
+    thompson_vs30: 468.06,
+    cvm_vs30: 437.8,
+    z1_0: 120.0,
+    z2_5: 1340.0
+  },
+  {
+    name: "s624",
+    longName: "s624",
+    lat: 34.11966,
+    lon: -117.46342,
+    thompson_vs30: 351.9,
+    cvm_vs30: 348.3,
+    z1_0: 170.0,
+    z2_5: 620.0
+  },
+  {
+    name: "s647",
+    longName: "s647",
+    lat: 34.17569,
+    lon: -117.36259,
+    thompson_vs30: 355.22,
+    cvm_vs30: 348.9,
+    z1_0: 310.0,
+    z2_5: 1230.0
+  },
+  {
+    name: "s660",
+    longName: "s660",
+    lat: 33.83989,
+    lon: -117.5299,
+    thompson_vs30: 390.09,
+    cvm_vs30: 362.0,
+    z1_0: 310.0,
+    z2_5: 670.0
+  },
+  {
+    name: "s666",
+    longName: "s666",
+    lat: 34.07501,
+    lon: -117.36923,
+    thompson_vs30: 378.09,
+    cvm_vs30: 351.6,
+    z1_0: 170.0,
+    z2_5: 550.0
+  },
+  {
+    name: "s668",
+    longName: "s668",
+    lat: 34.15333,
+    lon: -117.31548,
+    thompson_vs30: 687.92,
+    cvm_vs30: 534.5,
+    z1_0: 80.0,
+    z2_5: 1190.0
+  },
+  {
+    name: "s689",
+    longName: "s689",
+    lat: 34.13096,
+    lon: -117.2684,
+    thompson_vs30: 295.32,
+    cvm_vs30: 266.9,
+    z1_0: 200.0,
+    z2_5: 1040.0
+  },
+  {
+    name: "s710",
+    longName: "s710",
+    lat: 34.10857,
+    lon: -117.22133,
+    thompson_vs30: 293.59,
+    cvm_vs30: 306.4,
+    z1_0: 180.0,
+    z2_5: 680.0
+  },
+  {
+    name: "s731",
+    longName: "s731",
+    lat: 34.08616,
+    lon: -117.17429,
+    thompson_vs30: 350.57,
+    cvm_vs30: 342.4,
+    z1_0: 170.0,
+    z2_5: 1280.0
+  },
+  {
+    name: "s765",
+    longName: "s765",
+    lat: 33.64992,
+    lon: -117.3488,
+    thompson_vs30: 332.34684532508254,
+    cvm_vs30: 320.3,
+    z1_0: 100.0,
+    z2_5: 390.0
+  },
+  {
+    name: "s794",
+    longName: "s794",
+    lat: 33.90151,
+    lon: -117.11418,
+    thompson_vs30: 293.5,
+    cvm_vs30: 301.7,
+    z1_0: 150.0,
+    z2_5: 1080.0
+  },
+  {
+    name: "s795",
+    longName: "s795",
+    lat: 33.94062,
+    lon: -117.08726,
+    thompson_vs30: 468.29,
+    cvm_vs30: 435.6,
+    z1_0: 130.0,
+    z2_5: 1760.0
+  },
+  {
+    name: "PERR2",
+    longName: "Perris",
+    lat: 33.78807,
+    lon: -117.24363,
+    thompson_vs30: 710.08,
+    cvm_vs30: 681.7,
+    z1_0: 40.0,
+    z2_5: 250.0
+  },
+  {
+    name: "UCR",
+    longName: "UCR",
+    lat: 33.96425,
+    lon: -117.31636,
+    thompson_vs30: 709.46,
+    cvm_vs30: 368.1,
+    z1_0: 310.0,
+    z2_5: 450.0
+  },
+  {
+    name: "MRVY",
+    longName: "Moreno valley",
+    lat: 33.92527,
+    lon: -117.16828,
+    thompson_vs30: 709.86,
+    cvm_vs30: 413.7,
+    z1_0: 120.0,
+    z2_5: 970.0
+  },
+  {
+    name: "GV03",
+    longName: "Mt. Marie Louise N Grass Valley 3",
+    lat: 34.27648,
+    lon: -117.23294,
+    thompson_vs30: 688.53,
+    cvm_vs30: 617.7,
+    z1_0: 70.0,
+    z2_5: 1360.0
+  },
+  {
+    name: "GV05",
+    longName: "Mt. Marie Louise N Grass Valley 5",
+    lat: 34.28145,
+    lon: -117.24477,
+    thompson_vs30: 688.4,
+    cvm_vs30: 617.2,
+    z1_0: 70.0,
+    z2_5: 1360.0
+  },
+  {
+    name: "BKBU",
+    longName: "Black Butte",
+    lat: 34.56202,
+    lon: -117.72605,
+    thompson_vs30: 719.57,
+    cvm_vs30: 561.6,
+    z1_0: 80.0,
+    z2_5: 770.0
+  },
+  {
+    name: "LBUT2",
+    longName: "Lovejoy Buttes",
+    lat: 34.59237,
+    lon: -117.81468,
+    thompson_vs30: 349.98,
+    cvm_vs30: 490.9,
+    z1_0: 90.0,
+    z2_5: 630.0
+  },
+  {
+    name: "PIBU",
+    longName: "Piute Butte 1",
+    lat: 34.65307,
+    lon: -117.85022,
+    thompson_vs30: 713.48,
+    cvm_vs30: 645.4,
+    z1_0: 60.0,
+    z2_5: 640.0
+  },
+  {
+    name: "NUEVO",
+    longName: "Nuevo 2",
+    lat: 33.77602,
+    lon: -117.15202,
+    thompson_vs30: 710.14,
+    cvm_vs30: 680.4,
+    z1_0: 40.0,
+    z2_5: 260.0
+  },
+  {
+    name: "PERRM",
+    longName: "Perris Rimrock 1",
+    lat: 33.79945,
+    lon: -117.25333,
+    thompson_vs30: 710.07,
+    cvm_vs30: 677.2,
+    z1_0: 40.0,
+    z2_5: 270.0
+  },
+  {
+    name: "MKBD",
+    longName: "Mockingbird Van Buren",
+    lat: 33.88442,
+    lon: -117.38617,
+    thompson_vs30: 709.84,
+    cvm_vs30: 658.3,
+    z1_0: 50.0,
+    z2_5: 380.0
+  },
+  {
+    name: "GOPH",
+    longName: "Gopher Gulch",
+    lat: 33.90287,
+    lon: -117.3596,
+    thompson_vs30: 709.85,
+    cvm_vs30: 657.3,
+    z1_0: 50.0,
+    z2_5: 390.0
+  },
+  {
+    name: "GLBT",
+    longName: "Gibraltar",
+    lat: 33.95727,
+    lon: -117.38252,
+    thompson_vs30: 709.61,
+    cvm_vs30: 363.8,
+    z1_0: 150.0,
+    z2_5: 370.0
+  },
+  {
+    name: "PACI2",
+    longName: "Pacifico 1 SG",
+    lat: 34.3863,
+    lon: -118.0498,
+    thompson_vs30: 726.15,
+    cvm_vs30: 656.4,
+    z1_0: 60.0,
+    z2_5: 610.0
+  },
+  {
+    name: "PBWL",
+    longName: "Punchbowl 1",
+    lat: 34.4131,
+    lon: -117.85763,
+    thompson_vs30: 676.1,
+    cvm_vs30: 516.0,
+    z1_0: 80.0,
+    z2_5: 590.0
+  },
+  {
+    name: "LMAT",
+    longName: "Lake Mathews Drive",
+    lat: 33.80195,
+    lon: -117.40281,
+    thompson_vs30: 709.91,
+    cvm_vs30: 654.2,
+    z1_0: 50.0,
+    z2_5: 420.0
+  },
+  {
+    name: "LPER",
+    longName: "Lake Perris N",
+    lat: 33.8865,
+    lon: -117.16344,
+    thompson_vs30: 710.0,
+    cvm_vs30: 611.3,
+    z1_0: 60.0,
+    z2_5: 590.0
+  },
+  {
+    name: "ACTN",
+    longName: "Acton",
+    lat: 34.4613,
+    lon: -118.18378,
+    thompson_vs30: 525.42,
+    cvm_vs30: 491.0,
+    z1_0: 100.0,
+    z2_5: 840.0
+  }
+];
 
-    sites.forEach(site => {
-      L.marker([site.lat, site.lon])
-        .addTo(map)
-        .bindPopup(`<b>${site.name}</b><br>${site.longName}`);
-    });
+    
 
-    // Optional click interaction
-    map.on('click', function(e) {
+    
+    let markers = [];
+
+    function renderMarkers(filteredSites) {
+      markers.forEach(m => map.removeLayer(m));
+      markers = [];
+
+      filteredSites.forEach(site => {
+        const marker = L.marker([site.lat, site.lon])
+          .addTo(map)
+          .bindPopup(
+            `<b>${site.name}</b><br>` +
+            `${site.longName}<br>` +
+            `Thompson Vs30: ${site.thompson_vs30}<br>` +
+            `3D CVM Vs30: ${site.cvm_vs30}<br>` +
+            `Z1.0: ${site.z1_0}<br>` +
+            `Z2.5: ${site.z2_5}`
+          );
+        markers.push(marker);
+      });
+    }
+
+    function applyFilters() {
+      const searchText = document.getElementById("searchBox").value.toLowerCase();
+      const vs30Min = parseFloat(document.getElementById("vs30Filter").value);
+      const z1Max = parseFloat(document.getElementById("z1Filter").value);
+
+      const filtered = sites.filter(site => {
+        return (
+          (!searchText || site.name.toLowerCase().includes(searchText)) &&
+          (isNaN(vs30Min) || site.thompson_vs30 >= vs30Min) &&
+          (isNaN(z1Max) || site.z1_0 <= z1Max)
+        );
+      });
+
+      renderMarkers(filtered);
+    }
+
+    function resetFilters() {
+      document.getElementById("searchBox").value = '';
+      document.getElementById("vs30Filter").value = '';
+      document.getElementById("z1Filter").value = '';
+      renderMarkers(sites);
+    }
+
+    // Initial render
+    renderMarkers(sites);
+
+
+map.on('click', function(e) {
       const { lat, lng } = e.latlng;
       L.popup()
         .setLatLng([lat, lng])
