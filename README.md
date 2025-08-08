@@ -84,7 +84,9 @@ When installing Python, make sure to check the boxes below. <img width="656" hei
 
 
 
-
+**MORE ABOUT THE GUI TOOL**
+<br>
+<br>
 GUI powered by Tkinter. 
 <br>
 
