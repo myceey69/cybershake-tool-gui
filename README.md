@@ -1,4 +1,4 @@
-**Windows and macOS/Linux instructions.**
+**Windows and macOS/Linux installation instructions.**
 <br>
 1. Download the CyberShake Tool from this repository. 
 <br>
@@ -51,7 +51,7 @@ When installing Python, make sure to check the boxes below. <img width="656" hei
 <br>
 <br>
 
-**==== On macOS ====**  
+**==== On macOS/Linux ====**  
 
   1.  Go to the terminal and type(assuming Python is already installed for macOS): **pip3 install numpy pandas sqlalchemy mysql-connector-python configparser** and enter. 
    Additionally, type **pip3 install pymysql**, then **pip3 install matplotlib**, and enter. Before installing requirements, make sure Python is correctly installed on your system by checking the Python version in the terminal. 
