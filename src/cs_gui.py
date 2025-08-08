@@ -16,6 +16,8 @@ import numpy as np
 from PIL import Image, ImageTk
 import webview
 
+
+
 # --- Gemini API Setup ---
 genai.configure(api_key=config.GEMINI_API_KEY)
 
@@ -277,20 +279,44 @@ def read_and_plot_grm():
         return
     try:
         with open(file_path, 'rb') as f:
-            data = np.fromfile(f, dtype=np.float32)
-        if data.size == 0:
-            messagebox.showwarning("Empty File", "The selected .grm file contains no data.")
+            raw = f.read()
+
+        # Skip header (adjust size as needed; assume 1024 bytes here)
+        header_size = 1024
+        data = np.frombuffer(raw[header_size:], dtype=np.float32)
+
+        # Check for even split
+        if len(data) % 2 != 0:
+            messagebox.showwarning("Format Warning", "Unexpected number of samples; cannot split evenly.")
             return
-        plt.figure(figsize=(12, 5))
-        plt.plot(data, color='midnightblue', linewidth=1)
-        plt.title(f"Seismogram: {os.path.basename(file_path)}", fontsize=14, fontweight='bold')
-        plt.xlabel("Sample Index (Time Steps)", fontsize=12)
-        plt.ylabel("Amplitude (Ground Motion)", fontsize=12)
-        plt.grid(True, linestyle='--', alpha=0.6)
+
+        mid = len(data) // 2
+        sample1 = data[:mid]
+        sample2 = data[mid:]
+
+        # Plot each in a subplot
+        plt.figure(figsize=(14, 6))
+
+        plt.subplot(1, 2, 1)
+        plt.plot(sample1, color='navy')
+        plt.title("Sample 1")
+        plt.xlabel("Sample Index (Time Steps)")
+        plt.ylabel("Amplitude (Ground Motion)")
+        plt.grid(True)
+
+        plt.subplot(1, 2, 2)
+        plt.plot(sample2, color='darkgreen')
+        plt.title("Sample 2")
+        plt.xlabel("Sample Index (Time Steps)")
+        plt.ylabel("Amplitude (Ground Motion)")
+        plt.grid(True)
+
         plt.tight_layout()
         plt.show()
+
     except Exception as e:
         messagebox.showerror("Read Error", f"Failed to read file:\n{e}")
+
 
 
 root.mainloop()
