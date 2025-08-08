@@ -27,10 +27,9 @@ When installing Python, make sure to check the boxes below. <img width="656" hei
     After setup is complete, run the **run_cybershake_windows.bat** file to launch the CyberShake Tool and begin using it. 
 <br>
 
-5. A built-in seismogram reader is included. Simply run seismogram_reader.bat, then copy the filename of the seismogram file retrieved in the output folder, paste it when prompted, and the tool will display the seismogram plot.
+5. A built-in seismogram reader is included. Simply click on the **Read Seismogram** and the tool will display the seismogram plot.
 
-
-<img width="938" height="510" alt="image" src="https://github.com/user-attachments/assets/be7c2738-0708-429a-b0c7-6bbbbe500089" />
+<img width="184" height="141" alt="image" src="https://github.com/user-attachments/assets/0c0ef4f4-d83e-43ef-b0ec-b1d9cab01675" />
 
 
 <br>
