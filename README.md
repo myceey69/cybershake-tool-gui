@@ -35,14 +35,14 @@ When installing Python, make sure to check the boxes below. <img width="656" hei
 <br> 
 
 6. A built-in Large Language Model is included. Simply click on the **Ask AI** and the tool will display a window for you to ask simple questions about the CyberShake Tool.
-<br> 
+
 
 <img width="156" height="68" alt="image" src="https://github.com/user-attachments/assets/e4d15b46-cefd-4443-8755-2dd05d0d0ff8" />
 <br>
 <br> 
 
 7. A built-in Interactive Map is included. Simply click on the **Open Map** and the tool will display a map that shows all the site info and its information.
- <br>  
+   
 <img width="160" height="42" alt="image" src="https://github.com/user-attachments/assets/c4ddd4a4-ebcd-42fb-b08e-7f800629929f" />
 
 
