@@ -31,11 +31,48 @@ When installing Python, make sure to check the boxes below. <img width="656" hei
 
 <img width="184" height="141" alt="image" src="https://github.com/user-attachments/assets/0c0ef4f4-d83e-43ef-b0ec-b1d9cab01675" />
 
+<br> 
+6. A built-in Large Language Model is included. Simply click on the **Ask AI** and the tool will display a window for you to ask simple questions about the CyberShake Tool.
+
 
 <br>
 <br>
 <br>
 <br>
+
+**==== On macOS ====**  
+
+  1.  Go to the terminal and type(assuming Python is already installed for macOS): **pip3 install numpy pandas sqlalchemy mysql-connector-python configparser** and enter. 
+   Additionally, type **pip3 install pymysql**, then **pip3 install matplotlib**, and enter. Before installing requirements, make sure Python is correctly installed on your system by checking the Python version in the terminal. 
+   <br>
+   Type **pip3 --version** in the terminal to verify that Python is in your system. 
+   <br>
+   <br>
+   **Image example:** 
+   <br>
+   <img width="718" height="34" alt="image" src="https://github.com/user-attachments/assets/f99a942b-602b-4004-b0d7-f13329faa19c" />
+
+   <br>
+   <img width="260" height="31" alt="image" src="https://github.com/user-attachments/assets/5e01fcfb-d14a-4229-a5a6-9cdb2a09e4dc" />
+
+   <br> 
+   <img width="185" height="27" alt="image" src="https://github.com/user-attachments/assets/e0ccb52b-dba9-443f-81ec-f20c3d4c49cb" />
+<br> 
+ <br>  
+
+   2. Go to the terminal and type **cd ~/Downloads/cybershake-tool-master/src** and enter, then type **python3 main.py** to start the cybershake tool on macOS. <br>
+   **Note**: if your file is in another location and not in "Downloads", you have to   **cd**   to the right directory in order to make the cybershake tool work. 
+<br>
+
+   3. Go to the terminal and type **cd ~/Downloads/cybershake-tool-master/src** and enter, then type **python3 seismogramsReader.py** to start the seismogram reader on macOS. <br> 
+   **Note**: if your file is in another location and not in "Downloads", you have to   **cd**   to the right directory in order to make the seismogram reader work.
+<br>
+<br>
+<br>
+<br>
+
+
+
 
 GUI powered by Tkinter. 
 <br>
