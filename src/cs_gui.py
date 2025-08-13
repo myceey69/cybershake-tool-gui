@@ -16,8 +16,6 @@ import numpy as np
 from PIL import Image, ImageTk
 import webview
 
-
-
 # --- Gemini API Setup ---
 genai.configure(api_key=config.GEMINI_API_KEY)
 
@@ -299,14 +297,14 @@ def read_and_plot_grm():
 
         plt.subplot(1, 2, 1)
         plt.plot(sample1, color='navy')
-        plt.title("Sample 1")
+        plt.title("X Component")
         plt.xlabel("Sample Index (Time Steps)")
         plt.ylabel("Amplitude (Ground Motion)")
         plt.grid(True)
 
         plt.subplot(1, 2, 2)
         plt.plot(sample2, color='darkgreen')
-        plt.title("Sample 2")
+        plt.title("Y Component")
         plt.xlabel("Sample Index (Time Steps)")
         plt.ylabel("Amplitude (Ground Motion)")
         plt.grid(True)
@@ -316,7 +314,6 @@ def read_and_plot_grm():
 
     except Exception as e:
         messagebox.showerror("Read Error", f"Failed to read file:\n{e}")
-
 
 
 root.mainloop()
